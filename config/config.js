@@ -117,14 +117,14 @@ export default {
               name: 'admin',
               icon: 'crown',
               component: './Admin',
-              authority: ['admin'],
+              // authority: ['admin'],
               routes: [
                 {
                   path: '/admin/sub-page',
                   name: 'sub-page',
                   icon: 'smile',
                   component: './Welcome',
-                  authority: ['admin'],
+                  // authority: ['admin'],
                 },
               ],
             },
