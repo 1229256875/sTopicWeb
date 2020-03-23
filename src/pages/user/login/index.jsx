@@ -41,54 +41,23 @@ const Login = props => {
           )}
 
           <UserName
-            name="userName"
-            placeholder="用户名: admin or user"
+            name="code"
+            placeholder="请输入学号!"
             rules={[
               {
                 required: true,
-                message: '请输入用户名!',
+                pattern: /\d{8}/,
+                message: '请输入学号!',
               },
             ]}
           />
           <Password
             name="password"
-            placeholder="密码: ant.design"
+            placeholder="请输入密码!"
             rules={[
               {
                 required: true,
-                message: '请输入密码！',
-              },
-            ]}
-          />
-        </Tab>
-        <Tab key="mobile" tab="手机号登录">
-          {status === 'error' && loginType === 'mobile' && !submitting && (
-            <LoginMessage content="验证码错误" />
-          )}
-          <Mobile
-            name="mobile"
-            placeholder="手机号"
-            rules={[
-              {
-                required: true,
-                message: '请输入手机号！',
-              },
-              {
-                pattern: /^1\d{10}$/,
-                message: '手机号格式错误！',
-              },
-            ]}
-          />
-          <Captcha
-            name="captcha"
-            placeholder="验证码"
-            countDown={120}
-            getCaptchaButtonText=""
-            getCaptchaSecondText="秒"
-            rules={[
-              {
-                required: true,
-                message: '请输入验证码！',
+                message: '请输入密码!',
               },
             ]}
           />
@@ -107,10 +76,6 @@ const Login = props => {
         </div>
         <Submit loading={submitting}>登录</Submit>
         <div className={styles.other}>
-          其他登录方式
-          <AlipayCircleOutlined className={styles.icon} />
-          <TaobaoCircleOutlined className={styles.icon} />
-          <WeiboCircleOutlined className={styles.icon} />
           <Link className={styles.register} to="/user/register">
             注册账户
           </Link>

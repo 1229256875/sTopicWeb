@@ -31,3 +31,15 @@ export function setAuthority(authority) {
 
   reloadAuthorized();
 }
+
+export function checkAuthority(checkList = ['admin', 'teacher', 'student']) {
+  const authority = getAuthority();
+  let res = false;
+  typeof authority === 'object' &&
+  authority.forEach(item => {
+    if (checkList.includes(item)) {
+      res = true;
+    }
+  });
+  return res;
+}

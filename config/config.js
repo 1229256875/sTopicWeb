@@ -4,10 +4,11 @@ import slash from 'slash2';
 import themePluginConfig from './themePluginConfig';
 import proxy from './proxy';
 import webpackPlugin from './plugin.config';
-const { pwa } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
+
+const {pwa} = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
-const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, REACT_APP_ENV } = process.env;
+const {ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, REACT_APP_ENV} = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 const plugins = [
   ['umi-plugin-antd-icon-config', {}],
@@ -33,11 +34,11 @@ const plugins = [
       },
       pwa: pwa
         ? {
-            workboxPluginMode: 'InjectManifest',
-            workboxOptions: {
-              importWorkboxFrom: 'local',
-            },
-          }
+          workboxPluginMode: 'InjectManifest',
+          workboxOptions: {
+            importWorkboxFrom: 'local',
+          },
+        }
         : false, // default close dll, because issue https://github.com/ant-design/ant-design-pro/issues/4665
       // dll features https://webpack.js.org/plugins/dll-plugin/
       // dll: {
@@ -100,7 +101,7 @@ export default {
         {
           path: '/',
           component: '../layouts/BasicLayout',
-          authority: ['admin', 'user'],
+          authority: ['admin', 'student', 'teacher'],
           routes: [
             {
               path: '/',
@@ -112,27 +113,145 @@ export default {
               icon: 'smile',
               component: './Welcome',
             },
+            // {
+            //   path: '/admin',
+            //   name: 'admin',
+            //   icon: 'crown',
+            //   component: './Admin',
+            //   authority: ['admin'],
+            //   routes: [
+            //     {
+            //       path: '/admin/sub-page',
+            //       name: 'sub-page',
+            //       icon: 'smile',
+            //       component: './Welcome',
+            //       authority: ['admin'],
+            //     },
+            //   ],
+            // },
+            // {
+            //   name: 'list.table-list',
+            //   icon: 'table',
+            //   path: '/list',
+            //   component: './ListTableList',
+            // },
             {
-              path: '/admin',
-              name: 'admin',
-              icon: 'crown',
-              component: './Admin',
+              path: '/person',
+              name: 'person',
+              icon: 'smile',
+              component: './person',
+            },
+            {
+              path: '/topicList',
+              name: 'topicList',
+              icon: 'smile',
               // authority: ['admin'],
+              component: './topicList',
+            },
+            {
+              path: '/selectTopic',
+              name: 'selectTopic',
+              icon: 'smile',
+              authority: ['student'],
+              component: './selectTopic',
+            },
+            {
+              name: 'info',
+              icon: 'smile',
+              authority: ['teacher', 'student'],
               routes: [
                 {
-                  path: '/admin/sub-page',
-                  name: 'sub-page',
+                  path: '/info/student',
+                  name: 'student',
                   icon: 'smile',
-                  component: './Welcome',
-                  // authority: ['admin'],
+                  authority: ['teacher'],
+                  component: './info/student',
+                },
+                {
+                  path: '/info/teacher',
+                  name: 'teacher',
+                  icon: 'smile',
+                  authority: ['teacher', 'student'],
+                  component: './info/teacher',
+                },
+              ]
+            },
+            {
+              path: '/apply',
+              name: 'apply',
+              icon: 'smile',
+              authority: ['teacher'],
+              component: './apply',
+            },
+            {
+              path: '/topicMange',
+              name: 'topicMange',
+              icon: 'smile',
+              authority: ['teacher'],
+              component: './topicMange',
+            },
+            {
+              path: '/audit',
+              name: 'audit',
+              icon: 'smile',
+              authority: ['admin'],
+              component: './audit',
+            },
+            {
+              path: '/history',
+              name: 'history',
+              icon: 'smile',
+              // authority: ['admin'],
+              component: './history',
+            },
+            {
+              name: 'manage',
+              icon: 'smile',
+              authority: ['admin'],
+              routes: [
+                {
+                  path: '/manage/facultyManage',
+                  name: 'facultyManage',
+                  icon: 'smile',
+                  component: './manage/facultyManage',
+                  authority: ['admin'],
+                },
+                {
+                  path: '/manage/studentManage',
+                  name: 'studentManage',
+                  icon: 'smile',
+                  component: './manage/studentManage',
+                  authority: ['admin'],
+                },
+                {
+                  path: '/manage/teacherManage',
+                  name: 'teacherManage',
+                  icon: 'smile',
+                  component: './manage/teacherManage',
+                  authority: ['admin'],
+                },
+                {
+                  path: '/manage/time',
+                  name: 'time',
+                  icon: 'smile',
+                  component: './manage/time',
+                  authority: ['admin'],
+                },
+                {
+                  path: '/manage/score',
+                  name: 'score',
+                  icon: 'smile',
+                  component: './manage/score',
+                  authority: ['admin'],
                 },
               ],
             },
             {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
+              path: '/server',
+              name: 'server',
+              icon: 'smile',
+              authority: ['admin'],
+              component: './server',
             },
             {
               component: './404',
