@@ -1,5 +1,5 @@
 import { AlipayCircleOutlined, TaobaoCircleOutlined, WeiboCircleOutlined } from '@ant-design/icons';
-import { Alert, Checkbox } from 'antd';
+import {Alert, Checkbox, message} from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'umi';
 import { connect } from 'dva';
@@ -29,6 +29,10 @@ const Login = props => {
     dispatch({
       type: 'login/login',
       payload: { ...values, type },
+    }).then((rst)=>{
+      if (rst.data.status !== 200){
+        message.error(rst.data.msg);
+      }
     });
   };
 

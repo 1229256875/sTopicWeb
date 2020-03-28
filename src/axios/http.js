@@ -1,6 +1,7 @@
 import axios from 'axios';
 import history from '@/pages/.umi/history';
 import qs from 'qs';
+import {message} from "antd";
 
 /**
  * 自定义实例默认值
@@ -8,7 +9,8 @@ import qs from 'qs';
 const instance = axios.create({
   withCredentials: true,
   // baseURL: 'http://47.111.15.40:8888', // 公共接口url（如果有多个的公共接口的话，需要处理）
-  baseURL: 'http://127.0.0.1:8091', // 公共接口url（如果有多个的公共接口的话，需要处理）
+  // baseURL: 'http://127.0.0.1:8091', // 公共接口url（如果有多个的公共接口的话，需要处理）
+  baseURL: 'http://127.0.0.1:9986', // 公共接口url（如果有多个的公共接口的话，需要处理）
   timeout: 10000, // 请求超时
 });
 // /api/getUserById
@@ -29,15 +31,16 @@ instance.interceptors.request.use(
     // 获取token，配置请求头
     // const TOKEN = localStorage.getItem('Token')
     // 演示的token（注意配置请求头，需要后端做cros跨域处理，我这里自己前端配的跨域）
-    const TOKEN = '1fd399bdd9774831baf555ae5979c66b';
     // const token = '1fd399bdd9774831baf555ae5979c66b';
     if (config.method === 'post') {
       config.data = qs.stringify(config.data);
     }
 
+    const Token = localStorage.getItem('Token');
     // const token = localStorage.getItem('token');
-    if (TOKEN) {
+    if (Token) {
       // 配置请求头 token
+      config.headers['token'] = Token;
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       // config.headers['token'] = token;
       // config.headers['Authorization'] = TOKEN;
@@ -68,12 +71,12 @@ instance.interceptors.response.use(response => {
   // 我这个接口木有token啊，这里演示下
   const { url } = response.config;
   console.log(response);
-  // console.log(response);
   if (url.includes('/api/login')) {
+    localStorage.setItem("Token", response.data.token)
     return response;
   }
   checkStatus(response.data);
-  return response;
+  return response.data;
 }, error => {
 
   const { response } = error;
@@ -125,6 +128,7 @@ function checkStatus(response) {
   }
   if (status <= 504 && status >= 500) {
     if (!window.location.href.includes('/user/login')) {
+      message.error(response.data);
       // dispatch(routerRedux.push('/exception/500'));
       history.push('/user/login');
       return Promise.reject('服务器发生错误');

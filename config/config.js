@@ -113,28 +113,6 @@ export default {
               icon: 'smile',
               component: './Welcome',
             },
-            // {
-            //   path: '/admin',
-            //   name: 'admin',
-            //   icon: 'crown',
-            //   component: './Admin',
-            //   authority: ['admin'],
-            //   routes: [
-            //     {
-            //       path: '/admin/sub-page',
-            //       name: 'sub-page',
-            //       icon: 'smile',
-            //       component: './Welcome',
-            //       authority: ['admin'],
-            //     },
-            //   ],
-            // },
-            // {
-            //   name: 'list.table-list',
-            //   icon: 'table',
-            //   path: '/list',
-            //   component: './ListTableList',
-            // },
             {
               path: '/person',
               name: 'person',
@@ -145,17 +123,18 @@ export default {
               path: '/topicList',
               name: 'topicList',
               icon: 'smile',
-              // authority: ['admin'],
+              authority: ['admin'],
               component: './topicList',
             },
             {
               path: '/selectTopic',
               name: 'selectTopic',
               icon: 'smile',
-              authority: ['student'],
+              authority: ['student', 'teacher'],
               component: './selectTopic',
             },
             {
+              path: '/info',
               name: 'info',
               icon: 'smile',
               authority: ['teacher', 'student'],
@@ -174,7 +153,7 @@ export default {
                   authority: ['teacher', 'student'],
                   component: './info/teacher',
                 },
-              ]
+              ],
             },
             {
               path: '/apply',
@@ -206,6 +185,7 @@ export default {
             },
             {
               name: 'manage',
+              path: '/manage',
               icon: 'smile',
               authority: ['admin'],
               routes: [

@@ -10,9 +10,9 @@ const Model = {
       const response = yield call(getPersonInfo, payload);
       yield put({
         type: "setPersonInfo",
-        payload: response
+        payload: response.data
       });
-      return response;
+      return response.data;
     }
   },
   reducers: {

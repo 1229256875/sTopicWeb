@@ -1,11 +1,11 @@
 const student = [
   {
     label: "学号",
-    name: "code"
+    name: "code",
   },
   {
     label: "姓名",
-    name: "label"
+    name: "name"
   },
   {
     label: "性别",
@@ -44,7 +44,6 @@ const student = [
     name: "info"
   }
 ];
-
 const teacher = [
   {
     label: "职工号",
@@ -76,7 +75,8 @@ const teacher = [
   },
   {
     label: "邮箱",
-    name: "mail"
+    name: "mail",
+    disabled: true
   },
   {
     label: "职称",

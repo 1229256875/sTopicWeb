@@ -20,7 +20,7 @@ export default {
   'menu.info.teacher': '教师信息',
   'menu.apply': '题目申请',
   'menu.topicMange': '题目管理',
-  'menu.selectTopic': '选题管理',
+  'menu.selectTopic': '课题列表',
   'menu.login': '登录',
   'menu.register': '注册',
   'menu.register.result': '注册结果',
