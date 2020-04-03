@@ -1,4 +1,4 @@
-import {insertTopic, getTopicList, auditTopic} from "@/api/api";
+import {insertTopic, getTopicList, auditTopic, getHistoryTopic} from "@/api/api";
 
 const Model = {
   namespace: "topic",
@@ -10,7 +10,6 @@ const Model = {
   effects: {
     * insertTopic({payload}, {call, put}) {
       const response = yield call(insertTopic, payload);
-      console.log(response);
       return response;
     },
 
@@ -22,8 +21,12 @@ const Model = {
 
     * auditTopic({payload}, {call, put}){
       const response = yield call(auditTopic, payload);
-      console.log(response);
       return response;
+    },
+
+    *getHistoryTopic({payload}, {call, put}){
+      const response = yield call(getHistoryTopic, payload);
+      return response.data;
     }
   },
   reducers: {

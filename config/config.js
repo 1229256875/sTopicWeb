@@ -134,6 +134,13 @@ export default {
               component: './selectTopic',
             },
             {
+              path: '/studentTopic',
+              name: 'studentTopic',
+              icon: 'smile',
+              authority: ['student'],
+              component: './studentTopic'
+            },
+            {
               path: '/info',
               name: 'info',
               icon: 'smile',

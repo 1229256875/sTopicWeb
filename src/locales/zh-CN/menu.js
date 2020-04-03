@@ -6,6 +6,7 @@ export default {
   'menu.admin.sub-page': '二级管理页',
   'menu.person': '个人信息',
   'menu.topicList': '选题列表',
+  'menu.studentTopic': '已选题目',
   'menu.audit': '审核题目',
   'menu.server': '服务器',
   'menu.manage': '管理页面',

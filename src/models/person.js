@@ -1,4 +1,4 @@
-import { getPersonInfo } from "@/api/api";
+import {getPersonInfo} from "@/api/api";
 
 const Model = {
   namespace: "person",
@@ -6,7 +6,7 @@ const Model = {
     personInfo: []
   },
   effects: {
-    *getPersonInfo({ payload }, { call, put }) {
+    * getPersonInfo({payload}, {call, put}) {
       const response = yield call(getPersonInfo, payload);
       yield put({
         type: "setPersonInfo",
@@ -16,7 +16,7 @@ const Model = {
     }
   },
   reducers: {
-    setPersonInfo(state, { payload }) {
+    setPersonInfo(state, {payload}) {
       return {
         ...state,
         personInfo: payload

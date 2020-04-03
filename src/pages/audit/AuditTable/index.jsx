@@ -5,6 +5,19 @@ import {Table, Divider, Radio, Button, message, Modal, Spin, Input} from 'antd';
 import {connect} from "dva";
 
 
+//button显示按钮文字
+const statusList = {
+  0: '审核',
+  1: '查看',
+  2: '查看'
+};
+//mode 显示内容
+const typeList = {
+  1: '理论型',
+  2: '实践型',
+  // default: '未知'
+};
+
 const TimeTable = ({dispatch}) => {
 
   const [timeData, setTimeData] = useState([]);
@@ -16,12 +29,15 @@ const TimeTable = ({dispatch}) => {
   //返回值
   const [response, setResponse] = useState("");
 
+  //所处类型 0：未审核 1：已通过 2：已拒绝
+  const [status, setStatus] = useState(0);
+
   const columns = [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-    },
+    // {
+    //   title: 'Id',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    // },
     {
       title: '课题名称',
       dataIndex: 'topicName',
@@ -37,6 +53,15 @@ const TimeTable = ({dispatch}) => {
       title: '课题类型',
       dataIndex: 'mode',
       key: 'mode',
+      render: text => {
+        let rst = typeList[text] || '未知';
+
+        return (
+          <div>
+            {rst}
+          </div>
+        )
+      }
     },
     {
       title: '面向学年',
@@ -54,7 +79,7 @@ const TimeTable = ({dispatch}) => {
       key: 'info',
     },
     {
-      title: '审核',
+      title: '操作',
       key: 'tags',
       render: (text, record) => {
         return (
@@ -65,7 +90,7 @@ const TimeTable = ({dispatch}) => {
            onClick={() => {
              showHand()
            }}>
-          审核
+           {statusList[type]}
         </Button>
             <Modal
               title="审核"

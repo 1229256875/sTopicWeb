@@ -2,6 +2,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
 import { Spin } from 'antd';
 import styles from './index.less';
+import History from './HistoryTable';
 
 export default () => {
   const [loading, setLoading] = useState(true);
@@ -14,10 +15,11 @@ export default () => {
     <PageHeaderWrapper content="这是一个新页面，从这里进行开发！" className={styles.main}>
       <div
         style={{
-          paddingTop: 100,
+          paddingTop: 10,
           textAlign: 'center',
         }}
       >
+        <History />
         <Spin spinning={loading} size="large" />
       </div>
     </PageHeaderWrapper>

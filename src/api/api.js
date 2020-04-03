@@ -30,6 +30,16 @@ export function auditTopic(params) {
   return http.post("/api/auditTopic", params);
 }
 
+//获取历史题目
+export function getHistoryTopic() {
+  return http.get('/api/getHistoryTopicList');
+}
+
+
+//获取学院
+export function getFacultyList() {
+  return http.post('/api/getFacultyList');
+}
 
 /** *=============================================== */
 // 获取院系信息
