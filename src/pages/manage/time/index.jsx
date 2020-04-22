@@ -1,7 +1,7 @@
-import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import React, {useState, useEffect} from 'react';
-import {Spin} from 'antd';
-import styles from './index.less';
+import { PageHeaderWrapper } from "@ant-design/pro-layout";
+import React, { useState, useEffect } from "react";
+import { Spin } from "antd";
+import styles from "./index.less";
 import TimeTable from "@/pages/manage/time/TimeTable";
 
 export default () => {
@@ -16,11 +16,11 @@ export default () => {
       <div
         style={{
           paddingTop: 10,
-          textAlign: 'center',
+          textAlign: "center"
         }}
       >
-        <TimeTable/>
-        <Spin spinning={loading} size="large"/>
+        <TimeTable />
+        <Spin spinning={loading} size="large" />
       </div>
     </PageHeaderWrapper>
   );

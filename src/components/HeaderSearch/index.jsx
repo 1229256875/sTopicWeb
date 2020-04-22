@@ -1,9 +1,9 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { AutoComplete, Input } from 'antd';
-import useMergeValue from 'use-merge-value';
-import React, { useRef } from 'react';
-import classNames from 'classnames';
-import styles from './index.less';
+import { SearchOutlined } from "@ant-design/icons";
+import { AutoComplete, Input } from "antd";
+import useMergeValue from "use-merge-value";
+import React, { useRef } from "react";
+import classNames from "classnames";
+import styles from "./index.less";
 
 const HeaderSearch = props => {
   const {
@@ -18,14 +18,14 @@ const HeaderSearch = props => {
   const inputRef = useRef(null);
   const [value, setValue] = useMergeValue(defaultValue, {
     value: props.value,
-    onChange: props.onChange,
+    onChange: props.onChange
   });
   const [searchMode, setSearchMode] = useMergeValue(defaultOpen || false, {
     value: props.open,
-    onChange: onVisibleChange,
+    onChange: onVisibleChange
   });
   const inputClass = classNames(styles.input, {
-    [styles.show]: searchMode,
+    [styles.show]: searchMode
   });
   return (
     <div
@@ -38,7 +38,7 @@ const HeaderSearch = props => {
         }
       }}
       onTransitionEnd={({ propertyName }) => {
-        if (propertyName === 'width' && !searchMode) {
+        if (propertyName === "width" && !searchMode) {
           if (onVisibleChange) {
             onVisibleChange(searchMode);
           }
@@ -48,7 +48,7 @@ const HeaderSearch = props => {
       <SearchOutlined
         key="Icon"
         style={{
-          cursor: 'pointer',
+          cursor: "pointer"
         }}
       />
       <AutoComplete
@@ -57,7 +57,7 @@ const HeaderSearch = props => {
         value={value}
         style={{
           height: 28,
-          marginTop: -6,
+          marginTop: -6
         }}
         options={restProps.options}
         onChange={setValue}
@@ -68,7 +68,7 @@ const HeaderSearch = props => {
           aria-label={placeholder}
           placeholder={placeholder}
           onKeyDown={e => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               if (restProps.onSearch) {
                 restProps.onSearch(value);
               }

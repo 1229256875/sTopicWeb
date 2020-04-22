@@ -1,13 +1,13 @@
-import {getFacultyList} from "@/api/api";
+import { getFacultyList } from "@/api/api";
 
 const Model = {
   namespace: "faculty",
   state: {
-    a: [],
+    a: []
   },
 
   effects: {
-    * getFacultyList(action, {call, put}) {
+    *getFacultyList(action, { call, put }) {
       const response = yield call(getFacultyList);
       // yield put({
       //   type: 'setTime',
@@ -17,7 +17,7 @@ const Model = {
     }
   },
   reducers: {
-    setTime(state, {payload}) {
+    setTime(state, { payload }) {
       return {
         ...state,
         a: payload

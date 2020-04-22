@@ -2,6 +2,7 @@ const student = [
   {
     label: "学号",
     name: "code",
+    disabled: true
   },
   {
     label: "姓名",
@@ -29,15 +30,18 @@ const student = [
   },
   {
     label: "院系",
-    name: "facultyName"
+    name: "facultyName",
+    disabled: true
   },
   {
     label: "班级",
-    name: "className"
+    name: "className",
+    disabled: true
   },
   {
     label: "学年",
-    name: "year"
+    name: "year",
+    disabled: true
   },
   {
     label: "个人简介",
@@ -47,7 +51,8 @@ const student = [
 const teacher = [
   {
     label: "职工号",
-    name: "code"
+    name: "code",
+    disabled: true
   },
   {
     label: "姓名",
@@ -67,7 +72,8 @@ const teacher = [
   },
   {
     label: "院系",
-    name: "facultyName"
+    name: "facultyName",
+    disabled: true
   },
   {
     label: "qq",
@@ -75,8 +81,7 @@ const teacher = [
   },
   {
     label: "邮箱",
-    name: "mail",
-    disabled: true
+    name: "mail"
   },
   {
     label: "职称",
@@ -95,7 +100,8 @@ const teacher = [
 const admin = [
   {
     label: "账号",
-    name: "code"
+    name: "code",
+    disabled: true
   },
   {
     label: "姓名",
@@ -105,10 +111,10 @@ const admin = [
     label: "电话",
     name: "phone"
   },
-  {
-    label: "院系",
-    name: "facultyName"
-  },
+  // {
+  //   label: "院系",
+  //   name: "facultyName"
+  // },
   {
     label: "qq",
     name: "qq"

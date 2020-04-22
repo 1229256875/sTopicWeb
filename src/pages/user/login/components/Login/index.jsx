@@ -1,20 +1,20 @@
-import { Tabs, Form } from 'antd';
-import React, { useState } from 'react';
-import useMergeValue from 'use-merge-value';
-import classNames from 'classnames';
-import LoginContext from './LoginContext';
-import LoginItem from './LoginItem';
-import LoginSubmit from './LoginSubmit';
-import LoginTab from './LoginTab';
-import styles from './index.less';
+import { Tabs, Form } from "antd";
+import React, { useState } from "react";
+import useMergeValue from "use-merge-value";
+import classNames from "classnames";
+import LoginContext from "./LoginContext";
+import LoginItem from "./LoginItem";
+import LoginSubmit from "./LoginSubmit";
+import LoginTab from "./LoginTab";
+import styles from "./index.less";
 
 const Login = props => {
   const { className } = props;
   const [tabs, setTabs] = useState([]);
   const [active, setActive] = useState();
-  const [type, setType] = useMergeValue('', {
+  const [type, setType] = useMergeValue("", {
     value: props.activeKey,
-    onChange: props.onTabChange,
+    onChange: props.onTabChange
   });
   const TabChildren = [];
   const otherChildren = [];
@@ -23,7 +23,7 @@ const Login = props => {
       return;
     }
 
-    if (child.type.typeName === 'LoginTab') {
+    if (child.type.typeName === "LoginTab") {
       TabChildren.push(child);
     } else {
       otherChildren.push(child);
@@ -38,7 +38,7 @@ const Login = props => {
           },
           removeTab: id => {
             setTabs(tabs.filter(currentId => currentId !== id));
-          },
+          }
         },
         updateActive: activeItem => {
           if (active[type]) {
@@ -48,7 +48,7 @@ const Login = props => {
           }
 
           setActive(active);
-        },
+        }
       }}
     >
       <div className={classNames(className, styles.login)}>

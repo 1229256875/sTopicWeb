@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { Tag, message } from 'antd';
-import { connect } from 'dva';
-import groupBy from 'lodash/groupBy';
-import moment from 'moment';
-import NoticeIcon from '../NoticeIcon';
-import styles from './index.less';
+import React, { Component } from "react";
+import { Tag, message } from "antd";
+import { connect } from "dva";
+import groupBy from "lodash/groupBy";
+import moment from "moment";
+import NoticeIcon from "../NoticeIcon";
+import styles from "./index.less";
 
 class GlobalHeaderRight extends Component {
   componentDidMount() {
@@ -12,7 +12,7 @@ class GlobalHeaderRight extends Component {
 
     if (dispatch) {
       dispatch({
-        type: 'global/fetchNotices',
+        type: "global/fetchNotices"
       });
     }
   }
@@ -23,19 +23,19 @@ class GlobalHeaderRight extends Component {
 
     if (dispatch) {
       dispatch({
-        type: 'global/changeNoticeReadState',
-        payload: id,
+        type: "global/changeNoticeReadState",
+        payload: id
       });
     }
   };
   handleNoticeClear = (title, key) => {
     const { dispatch } = this.props;
-    message.success(`${'清空了'} ${title}`);
+    message.success(`${"清空了"} ${title}`);
 
     if (dispatch) {
       dispatch({
-        type: 'global/clearNotices',
-        payload: key,
+        type: "global/clearNotices",
+        payload: key
       });
     }
   };
@@ -59,16 +59,16 @@ class GlobalHeaderRight extends Component {
 
       if (newNotice.extra && newNotice.status) {
         const color = {
-          todo: '',
-          processing: 'blue',
-          urgent: 'red',
-          doing: 'gold',
+          todo: "",
+          processing: "blue",
+          urgent: "red",
+          doing: "gold"
         }[newNotice.status];
         newNotice.extra = (
           <Tag
             color={color}
             style={{
-              marginRight: 0,
+              marginRight: 0
             }}
           >
             {newNotice.extra}
@@ -78,7 +78,7 @@ class GlobalHeaderRight extends Component {
 
       return newNotice;
     });
-    return groupBy(newNotices, 'type');
+    return groupBy(newNotices, "type");
   };
   getUnreadData = noticeData => {
     const unreadMsg = {};
@@ -112,7 +112,7 @@ class GlobalHeaderRight extends Component {
         viewMoreText="查看更多"
         onClear={this.handleNoticeClear}
         onPopupVisibleChange={onNoticeVisibleChange}
-        onViewMore={() => message.info('Click on view more')}
+        onViewMore={() => message.info("Click on view more")}
         clearClose
       >
         <NoticeIcon.Tab
@@ -147,7 +147,7 @@ class GlobalHeaderRight extends Component {
 export default connect(({ user, global, loading }) => ({
   currentUser: user.currentUser,
   collapsed: global.collapsed,
-  fetchingMoreNotices: loading.effects['global/fetchMoreNotices'],
-  fetchingNotices: loading.effects['global/fetchNotices'],
-  notices: global.notices,
+  fetchingMoreNotices: loading.effects["global/fetchMoreNotices"],
+  fetchingNotices: loading.effects["global/fetchNotices"],
+  notices: global.notices
 }))(GlobalHeaderRight);

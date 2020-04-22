@@ -1,15 +1,21 @@
-import { Button, Col, Input, Row, Form, message } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
-import omit from 'omit.js';
-import { getFakeCaptcha } from '@/services/login';
-import ItemMap from './map';
-import LoginContext from './LoginContext';
-import styles from './index.less';
+import { Button, Col, Input, Row, Form, message } from "antd";
+import React, { useState, useCallback, useEffect } from "react";
+import omit from "omit.js";
+import ItemMap from "./map";
+import LoginContext from "./LoginContext";
+import styles from "./index.less";
+import { getFakeCaptcha } from "../../service";
+
 const FormItem = Form.Item;
 
-const getFormItemOptions = ({ onChange, defaultValue, customProps = {}, rules }) => {
+const getFormItemOptions = ({
+  onChange,
+  defaultValue,
+  customProps = {},
+  rules
+}) => {
   const options = {
-    rules: rules || customProps.rules,
+    rules: rules || customProps.rules
   };
 
   if (onChange) {
@@ -47,7 +53,7 @@ const LoginItem = props => {
       return;
     }
 
-    message.success('获取验证码成功！验证码为：1234');
+    message.success("获取验证码成功！验证码为：1234");
     setTiming(true);
   }, []);
   useEffect(() => {
@@ -79,8 +85,8 @@ const LoginItem = props => {
   const options = getFormItemOptions(props);
   const otherProps = restProps || {};
 
-  if (type === 'Captcha') {
-    const inputProps = omit(otherProps, ['onGetCaptcha', 'countDown']);
+  if (type === "Captcha") {
+    const inputProps = omit(otherProps, ["onGetCaptcha", "countDown"]);
     return (
       <FormItem shouldUpdate>
         {({ getFieldValue }) => (
@@ -96,11 +102,11 @@ const LoginItem = props => {
                 className={styles.getCaptcha}
                 size="large"
                 onClick={() => {
-                  const value = getFieldValue('mobile');
+                  const value = getFieldValue("mobile");
                   onGetCaptcha(value);
                 }}
               >
-                {timing ? `${count} 秒` : '获取验证码'}
+                {timing ? `${count} 秒` : "获取验证码"}
               </Button>
             </Col>
           </Row>

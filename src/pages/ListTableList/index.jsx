@@ -1,27 +1,27 @@
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, Menu, message } from 'antd';
-import React, { useState, useRef } from 'react';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import ProTable from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
-import UpdateForm from './components/UpdateForm';
-import { queryRule, updateRule, addRule, removeRule } from './service';
+import { DownOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Divider, Dropdown, Menu, message } from "antd";
+import React, { useState, useRef } from "react";
+import { PageHeaderWrapper } from "@ant-design/pro-layout";
+import ProTable from "@ant-design/pro-table";
+import CreateForm from "./components/CreateForm";
+import UpdateForm from "./components/UpdateForm";
+import { queryRule, updateRule, addRule, removeRule } from "./service";
 /**
  * 添加节点
  * @param fields
  */
 
 const handleAdd = async fields => {
-  const hide = message.loading('正在添加');
+  const hide = message.loading("正在添加");
 
   try {
     await addRule({ ...fields });
     hide();
-    message.success('添加成功');
+    message.success("添加成功");
     return true;
   } catch (error) {
     hide();
-    message.error('添加失败请重试！');
+    message.error("添加失败请重试！");
     return false;
   }
 };
@@ -31,20 +31,20 @@ const handleAdd = async fields => {
  */
 
 const handleUpdate = async fields => {
-  const hide = message.loading('正在配置');
+  const hide = message.loading("正在配置");
 
   try {
     await updateRule({
       name: fields.name,
       desc: fields.desc,
-      key: fields.key,
+      key: fields.key
     });
     hide();
-    message.success('配置成功');
+    message.success("配置成功");
     return true;
   } catch (error) {
     hide();
-    message.error('配置失败请重试！');
+    message.error("配置失败请重试！");
     return false;
   }
 };
@@ -54,86 +54,86 @@ const handleUpdate = async fields => {
  */
 
 const handleRemove = async selectedRows => {
-  const hide = message.loading('正在删除');
+  const hide = message.loading("正在删除");
   if (!selectedRows) return true;
 
   try {
     await removeRule({
-      key: selectedRows.map(row => row.key),
+      key: selectedRows.map(row => row.key)
     });
     hide();
-    message.success('删除成功，即将刷新');
+    message.success("删除成功，即将刷新");
     return true;
   } catch (error) {
     hide();
-    message.error('删除失败，请重试');
+    message.error("删除失败，请重试");
     return false;
   }
 };
 
 const TableList = () => {
-  const [sorter, setSorter] = useState('');
+  const [sorter, setSorter] = useState("");
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const actionRef = useRef();
   const columns = [
     {
-      title: '规则名称',
-      dataIndex: 'name',
+      title: "规则名称",
+      dataIndex: "name",
       rules: [
         {
           required: true,
-          message: '规则名称为必填项',
-        },
-      ],
+          message: "规则名称为必填项"
+        }
+      ]
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: "描述",
+      dataIndex: "desc",
+      valueType: "textarea"
     },
     {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
+      title: "服务调用次数",
+      dataIndex: "callNo",
       sorter: true,
       hideInForm: true,
-      renderText: val => `${val} 万`,
+      renderText: val => `${val} 万`
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: "状态",
+      dataIndex: "status",
       hideInForm: true,
       valueEnum: {
         0: {
-          text: '关闭',
-          status: 'Default',
+          text: "关闭",
+          status: "Default"
         },
         1: {
-          text: '运行中',
-          status: 'Processing',
+          text: "运行中",
+          status: "Processing"
         },
         2: {
-          text: '已上线',
-          status: 'Success',
+          text: "已上线",
+          status: "Success"
         },
         3: {
-          text: '异常',
-          status: 'Error',
-        },
-      },
+          text: "异常",
+          status: "Error"
+        }
+      }
     },
     {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
+      title: "上次调度时间",
+      dataIndex: "updatedAt",
       sorter: true,
-      valueType: 'dateTime',
-      hideInForm: true,
+      valueType: "dateTime",
+      hideInForm: true
     },
     {
-      title: '操作',
-      dataIndex: 'option',
-      valueType: 'option',
+      title: "操作",
+      dataIndex: "option",
+      valueType: "option",
       render: (_, record) => (
         <>
           <a
@@ -147,8 +147,8 @@ const TableList = () => {
           <Divider type="vertical" />
           <a href="">订阅警报</a>
         </>
-      ),
-    },
+      )
+    }
   ];
   return (
     <PageHeaderWrapper>
@@ -164,7 +164,7 @@ const TableList = () => {
           }
         }}
         params={{
-          sorter,
+          sorter
         }}
         toolBarRender={(action, { selectedRows }) => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
@@ -175,7 +175,7 @@ const TableList = () => {
               overlay={
                 <Menu
                   onClick={async e => {
-                    if (e.key === 'remove') {
+                    if (e.key === "remove") {
                       await handleRemove(selectedRows);
                       action.reload();
                     }
@@ -191,21 +191,22 @@ const TableList = () => {
                 批量操作 <DownOutlined />
               </Button>
             </Dropdown>
-          ),
+          )
         ]}
         tableAlertRender={(selectedRowKeys, selectedRows) => (
           <div>
-            已选择{' '}
+            已选择{" "}
             <a
               style={{
-                fontWeight: 600,
+                fontWeight: 600
               }}
             >
               {selectedRowKeys.length}
-            </a>{' '}
+            </a>{" "}
             项&nbsp;&nbsp;
             <span>
-              服务调用次数总计 {selectedRows.reduce((pre, item) => pre + item.callNo, 0)} 万
+              服务调用次数总计{" "}
+              {selectedRows.reduce((pre, item) => pre + item.callNo, 0)} 万
             </span>
           </div>
         )}
@@ -213,7 +214,10 @@ const TableList = () => {
         columns={columns}
         rowSelection={{}}
       />
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
+      <CreateForm
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+      >
         <ProTable
           onSubmit={async value => {
             const success = await handleAdd(value);

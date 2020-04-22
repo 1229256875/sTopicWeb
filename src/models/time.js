@@ -1,13 +1,13 @@
-import {getTime} from "@/api/api";
+import { getTime } from "@/api/api";
 
 const Model = {
   namespace: "time",
   state: {
-    a: [],
+    a: []
   },
 
   effects: {
-    * getTime(action, {call, put}) {
+    *getTime(action, { call, put }) {
       const response = yield call(getTime);
       // yield put({
       //   type: 'setTime',
@@ -17,13 +17,12 @@ const Model = {
     }
   },
   reducers: {
-    setTime(state, {payload}) {
+    setTime(state, { payload }) {
       return {
         ...state,
         a: payload
       };
     }
   }
-
 };
 export default Model;

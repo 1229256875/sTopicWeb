@@ -1,25 +1,32 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 
-import {Table, Divider, Radio, Button, message, Modal, Spin, Input} from 'antd';
+import {
+  Table,
+  Divider,
+  Radio,
+  Button,
+  message,
+  Modal,
+  Spin,
+  Input
+} from "antd";
 
-import {connect} from "dva";
-
+import { connect } from "dva";
 
 //button显示按钮文字
 const statusList = {
-  0: '审核',
-  1: '查看',
-  2: '查看'
+  0: "审核",
+  1: "查看",
+  2: "查看"
 };
 //mode 显示内容
 const typeList = {
-  1: '理论型',
-  2: '实践型',
+  1: "理论型",
+  2: "实践型"
   // default: '未知'
 };
 
-const TimeTable = ({dispatch}) => {
-
+const TimeTable = ({ dispatch }) => {
   const [timeData, setTimeData] = useState([]);
   const [count, setCount] = useState(0);
   const [type, setType] = useState(0);
@@ -39,59 +46,55 @@ const TimeTable = ({dispatch}) => {
     //   key: 'id',
     // },
     {
-      title: '课题名称',
-      dataIndex: 'topicName',
-      key: 'topicName',
+      title: "课题名称",
+      dataIndex: "topicName",
+      key: "topicName"
       // render: text => <a>{text}</a>,
     },
     {
-      title: '教师',
-      dataIndex: 'teacherName',
-      key: '${id}',
+      title: "教师",
+      dataIndex: "teacherName",
+      key: "${id}"
     },
     {
-      title: '课题类型',
-      dataIndex: 'mode',
-      key: 'mode',
+      title: "课题类型",
+      dataIndex: "mode",
+      key: "mode",
       render: text => {
-        let rst = typeList[text] || '未知';
+        let rst = typeList[text] || "未知";
 
-        return (
-          <div>
-            {rst}
-          </div>
-        )
+        return <div>{rst}</div>;
       }
     },
     {
-      title: '面向学年',
-      dataIndex: 'year',
-      key: 'year',
+      title: "面向学年",
+      dataIndex: "year",
+      key: "year"
     },
     {
-      title: '院系名称',
-      dataIndex: 'facultyName',
-      key: 'facultyName',
+      title: "院系名称",
+      dataIndex: "facultyName",
+      key: "facultyName"
     },
     {
-      title: '课程信息',
-      dataIndex: 'info',
-      key: 'info',
+      title: "课程信息",
+      dataIndex: "info",
+      key: "info"
     },
     {
-      title: '操作',
-      key: 'tags',
+      title: "操作",
+      key: "tags",
       render: (text, record) => {
         return (
           <span>
-
-         <Button
-           type={"primary"}
-           onClick={() => {
-             showHand()
-           }}>
-           {statusList[type]}
-        </Button>
+            <Button
+              type={"primary"}
+              onClick={() => {
+                showHand();
+              }}
+            >
+              {statusList[type]}
+            </Button>
             <Modal
               title="审核"
               visible={visible}
@@ -99,75 +102,83 @@ const TimeTable = ({dispatch}) => {
               onCancel={handleCancel}
               footer={null}
             >
-          <TextArea
-            placeholder="请输入审核理由"
-            rows={3}
-            onChange={(e) => {
-              setResponse(e.target.value)
-            }}
-          />
-          <button onClick={() => {
-            auditTopic(text.id, 1, response);
-            handleCancel()
-          }}>通过</button>
-          <button onClick={() => {
-            auditTopic(text.id, 2, response);
-            handleCancel()
-          }}>拒绝</button>
-        </Modal>
-      </span>
-        )
-      },
-    },
+              <TextArea
+                placeholder="请输入审核理由"
+                rows={3}
+                onChange={e => {
+                  setResponse(e.target.value);
+                }}
+              />
+              <button
+                onClick={() => {
+                  auditTopic(text.id, 1, response);
+                  handleCancel();
+                }}
+              >
+                通过
+              </button>
+              <button
+                onClick={() => {
+                  auditTopic(text.id, 2, response);
+                  handleCancel();
+                }}
+              >
+                拒绝
+              </button>
+            </Modal>
+          </span>
+        );
+      }
+    }
   ];
 
-  const {TextArea} = Input;
+  const { TextArea } = Input;
 
   const handleCancel = () => {
-    setVisible(false)
+    setVisible(false);
   };
 
   const showHand = () => {
-    setVisible(true)
-  }
+    setVisible(true);
+  };
 
   const auditTopic = (id, type, var0) => {
     dispatch({
-      type: 'topic/auditTopic',
+      type: "topic/auditTopic",
       payload: {
         type: type,
         id: id,
-        response: var0,
+        response: var0
       }
-    }).then((rst) => {
+    }).then(rst => {
       console.log("asd", rst);
       if (rst.status === 200) {
         message.success("审核成功");
       } else {
-        message.error(rst.data)
+        message.error(rst.data);
       }
-    })
+    });
   };
 
-  const getData = (type) => {
+  const getData = type => {
     dispatch({
-      type: 'topic/getTopicList',
+      type: "topic/getTopicList",
       payload: {
-        type: type,
-      },
-    }).then((da) => {
-      setTimeData(da)
-    })
+        type: type
+      }
+    }).then(da => {
+      setTimeData(da);
+    });
   };
 
   useEffect(() => {
-    getData(0)
+    getData(0);
   }, []);
 
   return (
     <div>
       <Radio.Group
-        onChange={({target: {value}}) => {
+        onChange={({ target: { value } }) => {
           setType(value);
           getData(value);
         }}
@@ -178,14 +189,10 @@ const TimeTable = ({dispatch}) => {
         <Radio value={2}>已拒绝</Radio>
       </Radio.Group>
 
-      <Divider/>
-      <Table
-        columns={columns}
-        dataSource={timeData}
-        rowKey={count}
-      />
+      <Divider />
+      <Table columns={columns} dataSource={timeData} rowKey={count} />
     </div>
-  )
+  );
 };
 
 export default connect()(TimeTable);

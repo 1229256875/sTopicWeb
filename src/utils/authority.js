@@ -1,8 +1,10 @@
-import { reloadAuthorized } from './Authorized'; // use localStorage to store the authority info, which might be sent from server in actual project.
+import { reloadAuthorized } from "./Authorized"; // use localStorage to store the authority info, which might be sent from server in actual project.
 
 export function getAuthority(str) {
   const authorityString =
-    typeof str === 'undefined' && localStorage ? localStorage.getItem('antd-pro-authority') : str; // authorityString could be admin, "admin", ["admin"]
+    typeof str === "undefined" && localStorage
+      ? localStorage.getItem("antd-pro-authority")
+      : str; // authorityString could be admin, "admin", ["admin"]
 
   let authority;
 
@@ -14,32 +16,35 @@ export function getAuthority(str) {
     authority = authorityString;
   }
 
-  if (typeof authority === 'string') {
+  if (typeof authority === "string") {
     return [authority];
   } // preview.pro.ant.design only do not use in your production.
   // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
-  if (!authority && ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site') {
-    return ['admin'];
+  if (
+    !authority &&
+    ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === "site"
+  ) {
+    return ["admin"];
   }
 
   return authority;
 }
 export function setAuthority(authority) {
-  const proAuthority = typeof authority === 'string' ? [authority] : authority;
-  localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority)); // auto reload
+  const proAuthority = typeof authority === "string" ? [authority] : authority;
+  localStorage.setItem("antd-pro-authority", JSON.stringify(proAuthority)); // auto reload
 
   reloadAuthorized();
 }
 
-export function checkAuthority(checkList = ['admin', 'teacher', 'student']) {
+export function checkAuthority(checkList = ["admin", "teacher", "student"]) {
   const authority = getAuthority();
   let res = false;
-  typeof authority === 'object' &&
-  authority.forEach(item => {
-    if (checkList.includes(item)) {
-      res = true;
-    }
-  });
+  typeof authority === "object" &&
+    authority.forEach(item => {
+      if (checkList.includes(item)) {
+        res = true;
+      }
+    });
   return res;
 }

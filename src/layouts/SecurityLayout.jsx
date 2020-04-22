@@ -1,27 +1,26 @@
-import React from 'react';
-import { connect } from 'dva';
-import { PageLoading } from '@ant-design/pro-layout';
-import { Redirect } from 'umi';
-import { stringify } from 'querystring';
-import { checkAuthority, getAuthority } from '@/utils/authority';
-
+import React from "react";
+import { connect } from "dva";
+import { PageLoading } from "@ant-design/pro-layout";
+import { Redirect } from "umi";
+import { stringify } from "querystring";
+import { checkAuthority, getAuthority } from "@/utils/authority";
 
 class SecurityLayout extends React.Component {
   state = {
-    isReady: false,
+    isReady: false
   };
 
   componentDidMount() {
     this.setState({
-      isReady: true,
+      isReady: true
     });
     const { dispatch } = this.props;
 
-    // if (dispatch) {
-    //   dispatch({
-    //     type: 'user/fetchCurrent',
-    //   });
-    // }
+    if (dispatch) {
+      dispatch({
+        type: "user/fetchCurrent"
+      });
+    }
   }
 
   render() {
@@ -31,14 +30,14 @@ class SecurityLayout extends React.Component {
 
     const isLogin = checkAuthority();
     const queryString = stringify({
-      redirect: window.location.href,
+      redirect: window.location.href
     });
 
     if ((!isLogin && loading) || !isReady) {
       return <PageLoading />;
     }
 
-    if (!isLogin && window.location.pathname !== '/user/login') {
+    if (!isLogin && window.location.pathname !== "/user/login") {
       return <Redirect to={`/user/login?${queryString}`} />;
     }
 
@@ -48,5 +47,5 @@ class SecurityLayout extends React.Component {
 
 export default connect(({ user, loading }) => ({
   currentUser: user.currentUser,
-  loading: loading.models.user,
+  loading: loading.models.user
 }))(SecurityLayout);

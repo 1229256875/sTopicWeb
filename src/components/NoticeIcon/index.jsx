@@ -1,11 +1,11 @@
-import { BellOutlined } from '@ant-design/icons';
-import { Badge, Spin, Tabs } from 'antd';
-import useMergeValue from 'use-merge-value';
-import React from 'react';
-import classNames from 'classnames';
-import NoticeList from './NoticeList';
-import HeaderDropdown from '../HeaderDropdown';
-import styles from './index.less';
+import { BellOutlined } from "@ant-design/icons";
+import { Badge, Spin, Tabs } from "antd";
+import useMergeValue from "use-merge-value";
+import React from "react";
+import classNames from "classnames";
+import NoticeList from "./NoticeList";
+import HeaderDropdown from "../HeaderDropdown";
+import styles from "./index.less";
 const { TabPane } = Tabs;
 
 const NoticeIcon = props => {
@@ -18,7 +18,7 @@ const NoticeIcon = props => {
       onItemClick,
       onViewMore,
       clearText,
-      viewMoreText,
+      viewMoreText
     } = props;
 
     if (!children) {
@@ -31,7 +31,14 @@ const NoticeIcon = props => {
         return;
       }
 
-      const { list, title, count, tabKey, showClear, showViewMore } = child.props;
+      const {
+        list,
+        title,
+        count,
+        tabKey,
+        showClear,
+        showViewMore
+      } = child.props;
       const len = list && list.length ? list.length : 0;
       const msgCount = count || count === 0 ? count : len;
       const tabTitle = msgCount > 0 ? `${title} (${msgCount})` : title;
@@ -49,7 +56,7 @@ const NoticeIcon = props => {
             title={title}
             {...child.props}
           />
-        </TabPane>,
+        </TabPane>
       );
     });
     return (
@@ -64,7 +71,7 @@ const NoticeIcon = props => {
   const { className, count, bell } = props;
   const [visible, setVisible] = useMergeValue(false, {
     value: props.popupVisible,
-    onChange: props.onPopupVisibleChange,
+    onChange: props.onPopupVisibleChange
   });
   const noticeButtonClass = classNames(className, styles.noticeButton);
   const notificationBox = getNotificationBox();
@@ -72,13 +79,13 @@ const NoticeIcon = props => {
   const trigger = (
     <span
       className={classNames(noticeButtonClass, {
-        opened: visible,
+        opened: visible
       })}
     >
       <Badge
         count={count}
         style={{
-          boxShadow: 'none',
+          boxShadow: "none"
         }}
         className={styles.badge}
       >
@@ -96,7 +103,7 @@ const NoticeIcon = props => {
       placement="bottomRight"
       overlay={notificationBox}
       overlayClassName={styles.popover}
-      trigger={['click']}
+      trigger={["click"]}
       visible={visible}
       onVisibleChange={setVisible}
     >
@@ -106,7 +113,8 @@ const NoticeIcon = props => {
 };
 
 NoticeIcon.defaultProps = {
-  emptyImage: 'https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg',
+  emptyImage:
+    "https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
 };
 NoticeIcon.Tab = NoticeList;
 export default NoticeIcon;
