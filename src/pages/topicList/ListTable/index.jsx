@@ -4,6 +4,8 @@ import { Table, Divider, Button, message, Input, Popconfirm } from "antd";
 
 import { connect } from "dva";
 
+import {getAuthority} from "@/utils/authority";
+
 //mode 显示内容
 const typeList = {
   1: "理论型",
@@ -72,13 +74,6 @@ const TimeTable = ({ dispatch }) => {
       render: (text, record) => {
         return (
           <div>
-            <Button>查看</Button>
-            {/*<Button onClick={() => {*/}
-            {/*  deleteTopic(text.id)*/}
-            {/*}}>*/}
-            {/*  删除*/}
-            {/*</Button>*/}
-
             <Popconfirm
               title={"Are you sure? "}
               okText={"Yes"}
@@ -97,20 +92,20 @@ const TimeTable = ({ dispatch }) => {
 
   const deleteTopic = id => {
     console.log("删除id ", id);
-    dispatch({
-      type: "topic/deleteTopic",
-      payload: {
-        id: id
-      }
-    }).then(rst => {
-      console.log(rst);
-      if (rst.status === 200) {
-        message.success("删除成功");
-        getData();
-      } else {
-        message.error(rst.msg);
-      }
-    });
+    // dispatch({
+    //   type: "topic/deleteTopic",
+    //   payload: {
+    //     id: id
+    //   }
+    // }).then(rst => {
+    //   console.log(rst);
+    //   if (rst.status === 200) {
+    //     message.success("删除成功");
+    //     getData();
+    //   } else {
+    //     message.error(rst.msg);
+    //   }
+    // });
   };
 
   const getData = () => {

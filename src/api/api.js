@@ -1,4 +1,5 @@
 import http from "@/axios/http";
+import {useState} from "react";
 
 //  登陆
 export function Login(params) {
@@ -8,6 +9,11 @@ export function Login(params) {
 // 验证账号
 export function Verify(params) {
   return http.get("/api/verify", params);
+}
+
+//获取person 集合
+export function getPersonList(params) {
+  return http.post('/api/getPersonList', params)
 }
 
 // 获取个人信息
@@ -68,6 +74,12 @@ export function searchTopic(params) {
 //教师审核
 export function teacherAudit(params) {
   return http.post("/api/teacherAudit", params);
+}
+
+
+//获取jvm信息
+export function getJvmInfo() {
+  return http.get('/actuator/metrics/jvm.memory.max');
 }
 
 /** *=============================================== */

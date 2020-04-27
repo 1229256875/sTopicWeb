@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 
 import {
   Table,
+  Form,
   Divider,
   Radio,
   Button,
   message,
   Modal,
   Spin,
-  Input
+  Input,
+  DatePicker,
+  Cascader
 } from "antd";
 
-import { connect } from "dva";
+import {connect} from "dva";
 
 //button显示按钮文字
 const statusList = {
@@ -26,18 +29,38 @@ const typeList = {
   // default: '未知'
 };
 
-const TimeTable = ({ dispatch }) => {
+const TimeTable = ({dispatch}) => {
   const [timeData, setTimeData] = useState([]);
   const [count, setCount] = useState(0);
   const [type, setType] = useState(0);
   const [visible, setVisible] = useState(false);
+  //查看 Modal 显示按钮
+  const [wiveVisible, setWiveVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({});
 
   //返回值
   const [response, setResponse] = useState("");
 
   //所处类型 0：未审核 1：已通过 2：已拒绝
   const [status, setStatus] = useState(0);
+
+  const [form] = Form.useForm();
+  const layout = {
+    labelCol: {
+      span: 8
+    },
+    wrapperCol: {
+      span: 12
+    }
+  };
+
+  const tailLayout = {
+    wrapperCol: {
+      offset: 8,
+      span: 12
+    }
+  };
 
   const columns = [
     // {
@@ -90,7 +113,7 @@ const TimeTable = ({ dispatch }) => {
             <Button
               type={"primary"}
               onClick={() => {
-                showHand();
+                showHand(text);
               }}
             >
               {statusList[type]}
@@ -126,27 +149,133 @@ const TimeTable = ({ dispatch }) => {
                 拒绝
               </button>
             </Modal>
+
+            <Modal title="查看"
+                   visible={wiveVisible}
+                   confirmLoading={false}
+                   onCancel={handleCancel}
+                   footer={null}>
+
+              <Form
+                form={form}
+                {...layout}
+                name="basic"
+                initialValues={formData}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                style={{
+                  width: 500
+                }}
+              >
+          <Form.Item
+            label="课题名称: "
+            name="topicName"
+            rules={[
+              {
+                required: true,
+                message: "请输入课题名称!"
+              }
+            ]}
+            size={300}
+          >
+            <Input/>
+          </Form.Item>
+
+          <Form.Item
+            label="课题类型: "
+            name="mode"
+            rules={[
+              {
+                required: true,
+                message: "请选择课题类型!"
+              }
+            ]}
+          >
+            <Radio.Group>
+              <Radio.Button value={1}>理论型</Radio.Button>
+              <Radio.Button value={2}>实践型</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label="面向院系: "
+            name="facultyIds"
+            rules={[
+              {
+                required: true,
+                message: "请选择面向院系!"
+              }
+            ]}
+          >
+            {/*<Cascader options={faculty} />*/}
+          </Form.Item>
+
+          <Form.Item
+            label="课题信息: "
+            name="info"
+            rules={[
+              {
+                required: true,
+                message: "请输入课题信息!"
+              }
+            ]}
+          >
+            <Input.TextArea/>
+          </Form.Item>
+
+          <Form.Item {...tailLayout}>
+            <Button type="primary" htmlType="修改">
+              提交
+            </Button>
+          </Form.Item>
+        </Form>
+            </Modal>
           </span>
         );
       }
     }
   ];
 
-  const { TextArea } = Input;
+  const {TextArea} = Input;
+
+  const onFinish = () => {
+
+  }
+
+  useEffect(() =>{
+    form.resetFields();
+  }, [formData])
+
+
+  const onFinishFailed = () => {
+
+  }
 
   const handleCancel = () => {
     setVisible(false);
+    setWiveVisible(false);
   };
 
-  const showHand = () => {
+  const showHand = (text) => {
+    const {type} = text;
+    //未审核
+    if (type === 0) {
+      setVisible(true)
+    } else if (type === 1) { //审核通过 只能查看
+      // const {FormInstance} = form;
+      setFormData(text);
+      setWiveVisible(true);
+    } else if (type === 2) {// 审核未通过,理论 教师可以重新申请一次
+      setFormData(text);
+      setWiveVisible(true);
+    }
     setVisible(true);
   };
 
-  const auditTopic = (id, type, var0) => {
+  const auditTopic = (id, var1, var0) => {
     dispatch({
       type: "topic/auditTopic",
       payload: {
-        type: type,
+        type: var1,
         id: id,
         response: var0
       }
@@ -154,6 +283,7 @@ const TimeTable = ({ dispatch }) => {
       console.log("asd", rst);
       if (rst.status === 200) {
         message.success("审核成功");
+        getData(type)
       } else {
         message.error(rst.data);
       }
@@ -178,7 +308,7 @@ const TimeTable = ({ dispatch }) => {
   return (
     <div>
       <Radio.Group
-        onChange={({ target: { value } }) => {
+        onChange={({target: {value}}) => {
           setType(value);
           getData(value);
         }}
@@ -189,8 +319,8 @@ const TimeTable = ({ dispatch }) => {
         <Radio value={2}>已拒绝</Radio>
       </Radio.Group>
 
-      <Divider />
-      <Table columns={columns} dataSource={timeData} rowKey={count} />
+      <Divider/>
+      <Table columns={columns} dataSource={timeData} rowKey={'id'}/>
     </div>
   );
 };
