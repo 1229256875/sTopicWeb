@@ -1,24 +1,64 @@
 import React, { Component } from "react";
-import { Tag, message } from "antd";
+import { Tag, message, Modal } from "antd";
+import ReconnectingWebSocket from "reconnecting-websocket";
 import { connect } from "dva";
 import groupBy from "lodash/groupBy";
 import moment from "moment";
 import NoticeIcon from "../NoticeIcon";
 import styles from "./index.less";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+
+//定义 websocket connection
+let options = {
+  maxRetries: 5
+};
+
+
 
 const GlobalHeaderRight = (props) => {
-
+  const [webSocket, setWebSocket] = useState()
   const { dispatch } = props;
+  const [count, setCount] = useState(0);
 
+  const [visible, setVisible] = useState(false)
 
   const webSocketConnection = () => {
-    const { currentUser } = props;
-    console.log(currentUser)
-    const websocket = new WebSocket("ws://127.0.0.1:9986/code/"+ currentUser.code);
-    websocket.open().then(() =>{
-      message.info('连接成功')
-    });
+    const ws = new WebSocket("ws://127.0.0.1:9986/socket/" + localStorage.getItem("code"));
+    // setWebSocket(ws)
+    
+ 
+
+    let result = "";
+
+    ws.onopen = e => {
+      console.log('连接上 ws 服务端了');
+      // ws.send(JSON.stringify({ flag: 'wsUrl', data: "Hello WebSocket!" }));
+    }
+    ws.onmessage = (msg) => {
+      // console.log('接收服务端发过来的消息: %o', msg);
+      var msgJson = JSON.parse(msg.data);
+      if (msgJson && msgJson.type === 1){
+        console.log('message',msgJson.message)
+      }else if(msgJson && msgJson.type === 2){
+        setCount(msgJson.count)
+      }else(
+        console.log('非法数据',msgJson)
+      )
+      // result += msgJson.MsgBody + '\n';
+      // if (msgJson.MsgCode == "999999") {//多设备在线的异常发生时;
+      //   window.location.href = '/#/';
+      // } else if (msgJson.MsgCode == "555555") {//用户退出系统的时候;
+      //   ws.close();
+      //   window.location.href = '/#/';
+      // }
+      // alert(msgJson.MsgBody);
+    };
+    ws.onclose =  (e) => {
+      console.log('ws 连接关闭了');
+      console.log(e);
+    }
+
   }
 
   useEffect(() => {
@@ -27,7 +67,7 @@ const GlobalHeaderRight = (props) => {
         type: "global/fetchNotices"
       });
     }
-    // webSocketConnection();
+    webSocketConnection();
   }, []);
 
   const changeReadState = clickedItem => {
@@ -107,14 +147,30 @@ const GlobalHeaderRight = (props) => {
     return unreadMsg;
   };
 
+  const showModal = () => {
+    console.log('asd')
+    setVisible(true)
+  };
+
+  const handleOk = e => {
+    console.log(e);
+    setVisible(false)
+  };
+
+  const handleCancel = e => {
+    console.log(e);
+    setVisible(false)
+  };
+
   const { currentUser, fetchingNotices, onNoticeVisibleChange } = props;
   const noticeData = getNoticeData();
   const unreadMsg = getUnreadData(noticeData);
 
   return (
+    <div>
     <NoticeIcon
       className={styles.action}
-      count={currentUser && currentUser.unreadCount}
+      count={count}
       onItemClick={item => {
         changeReadState(item);
       }}
@@ -123,7 +179,7 @@ const GlobalHeaderRight = (props) => {
       viewMoreText="查看更多"
       onClear={handleNoticeClear}
       onPopupVisibleChange={onNoticeVisibleChange}
-      onViewMore={() => message.info("Click on view more")}
+      onViewMore={showModal}
       clearClose
     >
       {/*<NoticeIcon.Tab*/}
@@ -151,6 +207,17 @@ const GlobalHeaderRight = (props) => {
       {/*  showViewMore*/}
       {/*/>*/}
     </NoticeIcon>
+    <Modal
+          title="Basic Modal"
+          visible={visible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+    </div>
   );
 };
 

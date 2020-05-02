@@ -17,8 +17,9 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(Login, payload);
+      const response = yield call(Login, payload);  
       if (response.status === 200 && response.data.status === 200) {
+        localStorage.setItem("code", payload.code)
         yield setAuthority(response.data.type);
         yield put({
           type: "changeLoginStatus",
@@ -52,7 +53,6 @@ const Model = {
   },
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log("person", payload.person);
       return {
         ...state,
         // status: payload.status,
