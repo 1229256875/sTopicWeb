@@ -104,6 +104,7 @@ const TimeTable = ({dispatch}) => {
 
   const onModal = (text) => {
     setFormData(text);
+    console.log(text)
     setWiveVisible(true);
   }
 
@@ -199,8 +200,8 @@ const TimeTable = ({dispatch}) => {
             ]}
           >
             <Radio.Group>
-              <Radio.Button value={1}>理论型</Radio.Button>
-              <Radio.Button value={2}>实践型</Radio.Button>
+              <Radio.Button value={2}>理论型</Radio.Button>
+              <Radio.Button value={1}>实践型</Radio.Button>
             </Radio.Group>
           </Form.Item>
           <Form.Item

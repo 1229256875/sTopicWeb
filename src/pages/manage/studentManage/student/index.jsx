@@ -72,7 +72,7 @@ const Tables = ({dispatch}) => {
 
   useEffect(() => {
     const var1 = {
-      type: 1
+      type: 2
     }
     getData(var1)
   }, []);

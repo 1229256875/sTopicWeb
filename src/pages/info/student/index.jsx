@@ -2,6 +2,7 @@ import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import React, { useState, useEffect } from "react";
 import { Spin } from "antd";
 import styles from "./index.less";
+import Tablesss from './student'
 
 export default () => {
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ export default () => {
           textAlign: "center"
         }}
       >
+        <Tablesss/>
         <Spin spinning={loading} size="large" />
       </div>
     </PageHeaderWrapper>

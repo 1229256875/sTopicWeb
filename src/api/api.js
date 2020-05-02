@@ -82,6 +82,11 @@ export function getJvmInfo() {
   return http.get('/actuator/metrics/jvm.memory.max');
 }
 
+//获取照片
+export function getImage(params) {
+  return http.get('/api/getImage/' + params)
+}
+
 /** *=============================================== */
 // 获取院系信息
 export function getFacultyAll() {

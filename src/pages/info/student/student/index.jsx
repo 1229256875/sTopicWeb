@@ -54,16 +54,6 @@ const Tables = ({dispatch}) => {
             <Button >
               查看
             </Button>
-            <Popconfirm
-              title={"Are you sure? "}
-              okText={"Yes"}
-              onConfirm={() => {
-                // deleteTopic(text.id);
-              }}
-              cancelText={"No"}
-            >
-              <Button>删除</Button>
-            </Popconfirm>
           </div>
         );
       }
@@ -72,7 +62,7 @@ const Tables = ({dispatch}) => {
 
   useEffect(() => {
     const var1 = {
-      type: 1
+      type: 2
     }
     getData(var1)
   }, []);

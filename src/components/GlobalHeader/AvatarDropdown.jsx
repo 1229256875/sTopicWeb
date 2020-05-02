@@ -41,7 +41,7 @@ class AvatarDropdown extends React.Component {
         avatar: "",
         name: ""
       },
-      menu
+      menu,
     } = this.props;
     const menuHeaderDropdown = (
       <Menu
@@ -51,24 +51,24 @@ class AvatarDropdown extends React.Component {
       >
         {menu && (
           <Menu.Item key="center">
-            <UserOutlined />
+            <UserOutlined/>
             个人中心
           </Menu.Item>
         )}
         {menu && (
           <Menu.Item key="settings">
-            <SettingOutlined />
+            <SettingOutlined/>
             个人设置
           </Menu.Item>
         )}
-        {menu && <Menu.Divider />}
+        {menu && <Menu.Divider/>}
         <Menu.Item key="changePwd">
-          <SettingOutlined />
+          <SettingOutlined/>
           <span>修改密码</span>
         </Menu.Item>
 
         <Menu.Item key="logout">
-          <LogoutOutlined />
+          <LogoutOutlined/>
           退出登录
         </Menu.Item>
       </Menu>
@@ -79,12 +79,10 @@ class AvatarDropdown extends React.Component {
           <Avatar
             size="small"
             className={styles.avatar}
-            src={"http://127.0.0.1:9986/api/getImage"}
+            src={"http://127.0.0.1:9986/api/getImage/" + currentUser.code}
             alt="avatar"
           />
-          <Badge count={1110} offset={[12, -5]}>
             <span className={styles.name}>{currentUser.name}</span>
-          </Badge>
         </span>
       </HeaderDropdown>
     ) : (
@@ -99,6 +97,6 @@ class AvatarDropdown extends React.Component {
   }
 }
 
-export default connect(({ user }) => ({
+export default connect(({user}) => ({
   currentUser: user.currentUser
 }))(AvatarDropdown);

@@ -81,7 +81,11 @@ const TimeTable = ({ dispatch }) => {
 
   return (
     <div>
-      <Table columns={columns} dataSource={timeData} pagination={false} />
+      <Table columns={columns}
+             dataSource={timeData}
+             pagination={false}
+             rowkey={'id'}
+      />
     </div>
   );
 };

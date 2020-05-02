@@ -3,6 +3,11 @@ import history from "@/pages/.umi/history";
 import qs from "qs";
 import { message } from "antd";
 
+
+
+const getUri = () =>{
+  return "http://127.0.0.1:9986";
+}
 /**
  * 自定义实例默认值
  */
@@ -10,7 +15,8 @@ const instance = axios.create({
   withCredentials: true,
   // baseURL: 'http://47.111.15.40:8888', // 公共接口url（如果有多个的公共接口的话，需要处理）
   // baseURL: 'http://127.0.0.1:8091', // 公共接口url（如果有多个的公共接口的话，需要处理）
-  baseURL: "http://127.0.0.1:9986", // 公共接口url（如果有多个的公共接口的话，需要处理）
+  // baseURL: "http://127.0.0.1:9986", // 公共接口url（如果有多个的公共接口的话，需要处理）
+  baseURL: getUri(),
   timeout: 10000 // 请求超时
 });
 // /api/getUserById

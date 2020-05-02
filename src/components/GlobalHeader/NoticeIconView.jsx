@@ -5,21 +5,33 @@ import groupBy from "lodash/groupBy";
 import moment from "moment";
 import NoticeIcon from "../NoticeIcon";
 import styles from "./index.less";
+import { useEffect } from "react";
 
-class GlobalHeaderRight extends Component {
-  componentDidMount() {
-    const { dispatch } = this.props;
+const GlobalHeaderRight = (props) => {
 
+  const { dispatch } = props;
+
+
+  const webSocketConnection = () => {
+    const { currentUser } = props;
+    console.log(currentUser)
+    const websocket = new WebSocket("ws://127.0.0.1:9986/code/"+ currentUser.code);
+    websocket.open().then(() =>{
+      message.info('连接成功')
+    });
+  }
+
+  useEffect(() => {
     if (dispatch) {
       dispatch({
         type: "global/fetchNotices"
       });
     }
-  }
+    // webSocketConnection();
+  }, []);
 
-  changeReadState = clickedItem => {
+  const changeReadState = clickedItem => {
     const { id } = clickedItem;
-    const { dispatch } = this.props;
 
     if (dispatch) {
       dispatch({
@@ -28,8 +40,7 @@ class GlobalHeaderRight extends Component {
       });
     }
   };
-  handleNoticeClear = (title, key) => {
-    const { dispatch } = this.props;
+  const handleNoticeClear = (title, key) => {
     message.success(`${"清空了"} ${title}`);
 
     if (dispatch) {
@@ -39,8 +50,8 @@ class GlobalHeaderRight extends Component {
       });
     }
   };
-  getNoticeData = () => {
-    const { notices = [] } = this.props;
+  const getNoticeData = () => {
+    const { notices = [] } = props;
 
     if (!notices || notices.length === 0) {
       return {};
@@ -80,7 +91,7 @@ class GlobalHeaderRight extends Component {
     });
     return groupBy(newNotices, "type");
   };
-  getUnreadData = noticeData => {
+  const getUnreadData = noticeData => {
     const unreadMsg = {};
     Object.keys(noticeData).forEach(key => {
       const value = noticeData[key];
@@ -96,53 +107,52 @@ class GlobalHeaderRight extends Component {
     return unreadMsg;
   };
 
-  render() {
-    const { currentUser, fetchingNotices, onNoticeVisibleChange } = this.props;
-    const noticeData = this.getNoticeData();
-    const unreadMsg = this.getUnreadData(noticeData);
-    return (
-      <NoticeIcon
-        className={styles.action}
-        count={currentUser && currentUser.unreadCount}
-        onItemClick={item => {
-          this.changeReadState(item);
-        }}
-        loading={fetchingNotices}
-        clearText="清空"
-        viewMoreText="查看更多"
-        onClear={this.handleNoticeClear}
-        onPopupVisibleChange={onNoticeVisibleChange}
-        onViewMore={() => message.info("Click on view more")}
-        clearClose
-      >
-        <NoticeIcon.Tab
-          tabKey="notification"
-          count={unreadMsg.notification}
-          list={noticeData.notification}
-          title="通知"
-          emptyText="你已查看所有通知"
-          showViewMore
-        />
-        <NoticeIcon.Tab
-          tabKey="message"
-          count={unreadMsg.message}
-          list={noticeData.message}
-          title="消息"
-          emptyText="您已读完所有消息"
-          showViewMore
-        />
-        <NoticeIcon.Tab
-          tabKey="event"
-          title="待办"
-          emptyText="你已完成所有待办"
-          count={unreadMsg.event}
-          list={noticeData.event}
-          showViewMore
-        />
-      </NoticeIcon>
-    );
-  }
-}
+  const { currentUser, fetchingNotices, onNoticeVisibleChange } = props;
+  const noticeData = getNoticeData();
+  const unreadMsg = getUnreadData(noticeData);
+
+  return (
+    <NoticeIcon
+      className={styles.action}
+      count={currentUser && currentUser.unreadCount}
+      onItemClick={item => {
+        changeReadState(item);
+      }}
+      loading={fetchingNotices}
+      clearText="清空"
+      viewMoreText="查看更多"
+      onClear={handleNoticeClear}
+      onPopupVisibleChange={onNoticeVisibleChange}
+      onViewMore={() => message.info("Click on view more")}
+      clearClose
+    >
+      {/*<NoticeIcon.Tab*/}
+      {/*  tabKey="notification"*/}
+      {/*  count={unreadMsg.notification}*/}
+      {/*  list={noticeData.notification}*/}
+      {/*  title="通知"*/}
+      {/*  emptyText="你已查看所有通知"*/}
+      {/*  showViewMore*/}
+      {/*/>*/}
+      <NoticeIcon.Tab
+        tabKey="message"
+        count={unreadMsg.message}
+        list={noticeData.message}
+        title="消息"
+        emptyText="您已读完所有消息"
+        showViewMore
+      />
+      {/*<NoticeIcon.Tab*/}
+      {/*  tabKey="event"*/}
+      {/*  title="待办"*/}
+      {/*  emptyText="你已完成所有待办"*/}
+      {/*  count={unreadMsg.event}*/}
+      {/*  list={noticeData.event}*/}
+      {/*  showViewMore*/}
+      {/*/>*/}
+    </NoticeIcon>
+  );
+};
 
 export default connect(({ user, global, loading }) => ({
   currentUser: user.currentUser,

@@ -54,16 +54,6 @@ const Tables = ({dispatch}) => {
             <Button >
               查看
             </Button>
-            <Popconfirm
-              title={"Are you sure? "}
-              okText={"Yes"}
-              onConfirm={() => {
-                // deleteTopic(text.id);
-              }}
-              cancelText={"No"}
-            >
-              <Button>删除</Button>
-            </Popconfirm>
           </div>
         );
       }

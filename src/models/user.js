@@ -1,5 +1,6 @@
-import { queryCurrent, query as queryUsers } from "@/services/user";
-import { getPersonInfo } from "@/api/api";
+import {queryCurrent, query as queryUsers} from "@/services/user";
+import {getPersonInfo, getImage} from "@/api/api";
+import {act} from "react-dom/test-utils";
 
 const UserModel = {
   namespace: "user",
@@ -7,25 +8,35 @@ const UserModel = {
     currentUser: {}
   },
   effects: {
-    *fetch(_, { call, put }) {
+    * fetch(_, {call, put}) {
       const response = yield call(queryUsers);
       yield put({
         type: "save",
         payload: response
       });
+
     },
 
-    *fetchCurrent(_, { call, put }) {
+    * fetchCurrent(_, {call, put}) {
       const response = yield call(getPersonInfo);
       yield put({
         type: "saveCurrentUser",
         payload: response.data
       });
+    },
+
+    * getImage({payload}, {call, put}) {
+      const ret = yield call(getImage, payload);
+      return ret;
     }
   },
   reducers: {
     saveCurrentUser(state, action) {
-      return { ...state, currentUser: action.payload || {} };
+      return {...state, currentUser: action.payload || {},};
+    },
+
+    saveImage(state, action) {
+      return {...state, currentUser: action.payload || {},};
     },
 
     changeNotifyCount(

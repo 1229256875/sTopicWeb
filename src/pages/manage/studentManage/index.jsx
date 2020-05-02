@@ -2,13 +2,14 @@ import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import React, { useState, useEffect } from "react";
 import { Spin } from "antd";
 import styles from "./index.less";
+import Tablessss from './student'
 
 export default () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 1000);
   }, []);
   return (
     <PageHeaderWrapper
@@ -17,10 +18,11 @@ export default () => {
     >
       <div
         style={{
-          paddingTop: 100,
+          paddingTop: 10,
           textAlign: "center"
         }}
       >
+        <Tablessss/>
         <Spin spinning={loading} size="large" />
       </div>
     </PageHeaderWrapper>
