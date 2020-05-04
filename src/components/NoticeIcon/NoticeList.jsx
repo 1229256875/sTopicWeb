@@ -61,7 +61,7 @@ const NoticeList = ({
                 }
                 description={
                   <div>
-                    <div className={styles.description}>{item.message[0]}</div>
+                    <div className={styles.description}>{item.message[0].message}</div>
                     {/* <div className={styles.datetime}>{item.message[0]}</div> */}
                   </div>
                 }
