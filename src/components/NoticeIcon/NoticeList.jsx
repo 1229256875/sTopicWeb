@@ -55,14 +55,14 @@ const NoticeList = ({
                 avatar={leftIcon}
                 title={
                   <div className={styles.title}>
-                    {item.title}
+                    {item.fromName}
                     <div className={styles.extra}>{item.extra}</div>
                   </div>
                 }
                 description={
                   <div>
-                    <div className={styles.description}>{item.description}</div>
-                    <div className={styles.datetime}>{item.datetime}</div>
+                    <div className={styles.description}>{item.message[0]}</div>
+                    {/* <div className={styles.datetime}>{item.message[0]}</div> */}
                   </div>
                 }
               />

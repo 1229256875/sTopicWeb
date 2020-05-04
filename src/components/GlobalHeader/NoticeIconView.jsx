@@ -4,62 +4,109 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 import { connect } from "dva";
 import groupBy from "lodash/groupBy";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { url } from "@/utils/const";
 import NoticeIcon from "../NoticeIcon";
 import styles from "./index.less";
-import { useEffect, useState } from "react";
 
-
-//定义 websocket connection
+// 定义 websocket connection
 let options = {
   maxRetries: 5
 };
 
-
-
-const GlobalHeaderRight = (props) => {
-  const [webSocket, setWebSocket] = useState()
-  const { dispatch } = props;
+const GlobalHeaderRight = props => {
+  // const [webSocket, setWebSocket] = useState();
+  const {
+    dispatch,
+    noticesModal,
+    currentUser,
+    fetchingNotices,
+    notices2
+  } = props;
   const [count, setCount] = useState(0);
+  const [ws, setWs] = useState(null);
+  const [three, setThree] = useState([]);
+  const [newThree, setNewThree] = useState();
+  const [newNotice, setNewNotice] = useState();
+  const { visible } = noticesModal;
+  const setVisible = val => {
+    dispatch({
+      type: "global/changeNoticesModal",
+      payload: {
+        visible: val
+      }
+    });
+  };
 
-  const [visible, setVisible] = useState(false)
+  const setNotice2 = v => {
+    dispatch({
+      type: "global/changeNotices2",
+      payload: v
+    });
+  };
+
+  useEffect(() => {
+    if (newThree) {
+      setThree([
+        ...(three.length >= 3
+          ? three.slice(three.length - 2, three.length)
+          : three),
+        newThree
+      ]);
+    }
+  }, [newThree]);
+
+  useEffect(() => {
+    if (newNotice) {
+      const fromCode = Object.keys(newNotice)[0];
+      setNotice2({
+        ...notices2,
+        ...(notices2[fromCode]
+          ? {
+              [fromCode]: {
+                ...notices2[fromCode],
+                message: [
+                  ...notices2[fromCode].message,
+                  ...newNotice[fromCode].message
+                ]
+              }
+            }
+          : newNotice)
+      });
+    }
+  }, [newNotice]);
 
   const webSocketConnection = () => {
-    const ws = new WebSocket("ws://127.0.0.1:9986/socket/" + localStorage.getItem("code"));
-    // setWebSocket(ws)
-    
- 
+    const wss = new WebSocket(
+      `${url.ws}/socket/${localStorage.getItem("code")}`
+      // "ws://127.0.0.1:9986/socket/" + localStorage.getItem("code")
+    );
+    // setWebSocket(wss)
 
     let result = "";
 
-    ws.onopen = e => {
-      console.log('连接上 ws 服务端了');
+    wss.onopen = e => {
+      console.log("连接上 ws 服务端了");
       // ws.send(JSON.stringify({ flag: 'wsUrl', data: "Hello WebSocket!" }));
-    }
-    ws.onmessage = (msg) => {
-      // console.log('接收服务端发过来的消息: %o', msg);
-      var msgJson = JSON.parse(msg.data);
-      if (msgJson && msgJson.type === 1){
-        console.log('message',msgJson.message)
-      }else if(msgJson && msgJson.type === 2){
-        setCount(msgJson.count)
-      }else(
-        console.log('非法数据',msgJson)
-      )
-      // result += msgJson.MsgBody + '\n';
-      // if (msgJson.MsgCode == "999999") {//多设备在线的异常发生时;
-      //   window.location.href = '/#/';
-      // } else if (msgJson.MsgCode == "555555") {//用户退出系统的时候;
-      //   ws.close();
-      //   window.location.href = '/#/';
-      // }
-      // alert(msgJson.MsgBody);
     };
-    ws.onclose =  (e) => {
-      console.log('ws 连接关闭了');
-      console.log(e);
-    }
+    wss.onmessage = msg => {
+      // console.log('接收服务端发过来的消息: %o', msg);
+      const msgJson = JSON.parse(msg.data);
+      if (msgJson && msgJson?.type === 2) {
+        setCount(msgJson.count);
+      } else {
+        const fromCode = Object.keys(msgJson)[0];
 
-  }
+        setNewNotice(msgJson);
+        setNewThree(msgJson[fromCode]);
+      }
+    };
+    wss.onclose = e => {
+      console.log("ws 连接关闭了");
+      console.log(e);
+    };
+    setWs(wss);
+  };
 
   useEffect(() => {
     if (dispatch) {
@@ -72,7 +119,6 @@ const GlobalHeaderRight = (props) => {
 
   const changeReadState = clickedItem => {
     const { id } = clickedItem;
-
     if (dispatch) {
       dispatch({
         type: "global/changeNoticeReadState",
@@ -80,6 +126,7 @@ const GlobalHeaderRight = (props) => {
       });
     }
   };
+
   const handleNoticeClear = (title, key) => {
     message.success(`${"清空了"} ${title}`);
 
@@ -131,6 +178,7 @@ const GlobalHeaderRight = (props) => {
     });
     return groupBy(newNotices, "type");
   };
+
   const getUnreadData = noticeData => {
     const unreadMsg = {};
     Object.keys(noticeData).forEach(key => {
@@ -147,76 +195,82 @@ const GlobalHeaderRight = (props) => {
     return unreadMsg;
   };
 
+  const changeNoticesVisible = v => {
+    dispatch({
+      type: "global/changeNoticesVisible",
+      payload: v
+    });
+  };
+
   const showModal = () => {
-    console.log('asd')
-    setVisible(true)
+    console.log("asd");
+    changeNoticesVisible(false);
+    setVisible(true);
   };
 
   const handleOk = e => {
     console.log(e);
-    setVisible(false)
+    setVisible(false);
   };
 
   const handleCancel = e => {
     console.log(e);
-    setVisible(false)
+    setVisible(false);
   };
 
-  const { currentUser, fetchingNotices, onNoticeVisibleChange } = props;
   const noticeData = getNoticeData();
   const unreadMsg = getUnreadData(noticeData);
 
   return (
     <div>
-    <NoticeIcon
-      className={styles.action}
-      count={count}
-      onItemClick={item => {
-        changeReadState(item);
-      }}
-      loading={fetchingNotices}
-      clearText="清空"
-      viewMoreText="查看更多"
-      onClear={handleNoticeClear}
-      onPopupVisibleChange={onNoticeVisibleChange}
-      onViewMore={showModal}
-      clearClose
-    >
-      {/*<NoticeIcon.Tab*/}
-      {/*  tabKey="notification"*/}
-      {/*  count={unreadMsg.notification}*/}
-      {/*  list={noticeData.notification}*/}
-      {/*  title="通知"*/}
-      {/*  emptyText="你已查看所有通知"*/}
-      {/*  showViewMore*/}
-      {/*/>*/}
-      <NoticeIcon.Tab
-        tabKey="message"
-        count={unreadMsg.message}
-        list={noticeData.message}
-        title="消息"
-        emptyText="您已读完所有消息"
-        showViewMore
-      />
-      {/*<NoticeIcon.Tab*/}
-      {/*  tabKey="event"*/}
-      {/*  title="待办"*/}
-      {/*  emptyText="你已完成所有待办"*/}
-      {/*  count={unreadMsg.event}*/}
-      {/*  list={noticeData.event}*/}
-      {/*  showViewMore*/}
-      {/*/>*/}
-    </NoticeIcon>
-    <Modal
-          title="Basic Modal"
-          visible={visible}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-        </Modal>
+      <NoticeIcon
+        className={styles.action}
+        count={count}
+        onItemClick={item => {
+          changeReadState(item);
+        }}
+        loading={fetchingNotices}
+        clearText="清空"
+        viewMoreText="查看更多"
+        onClear={handleNoticeClear}
+        onViewMore={showModal}
+        clearClose
+      >
+        {/*<NoticeIcon.Tab*/}
+        {/*  tabKey="notification"*/}
+        {/*  count={unreadMsg.notification}*/}
+        {/*  list={noticeData.notification}*/}
+        {/*  title="通知"*/}
+        {/*  emptyText="你已查看所有通知"*/}
+        {/*  showViewMore*/}
+        {/*/>*/}
+        <NoticeIcon.Tab
+          tabKey="message"
+          count={count}
+          list={three}
+          title="消息"
+          emptyText="您已读完所有消息"
+          showViewMore
+        />
+        {/*<NoticeIcon.Tab*/}
+        {/*  tabKey="event"*/}
+        {/*  title="待办"*/}
+        {/*  emptyText="你已完成所有待办"*/}
+        {/*  count={unreadMsg.event}*/}
+        {/*  list={noticeData.event}*/}
+        {/*  showViewMore*/}
+        {/*/>*/}
+      </NoticeIcon>
+      <Modal
+        title="Basic Modal"
+        visible={visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
     </div>
   );
 };
@@ -226,5 +280,7 @@ export default connect(({ user, global, loading }) => ({
   collapsed: global.collapsed,
   fetchingMoreNotices: loading.effects["global/fetchMoreNotices"],
   fetchingNotices: loading.effects["global/fetchNotices"],
-  notices: global.notices
+  notices: global.notices,
+  noticesModal: global.noticesModal,
+  notices2: global.notices2
 }))(GlobalHeaderRight);

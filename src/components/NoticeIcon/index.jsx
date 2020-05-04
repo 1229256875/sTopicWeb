@@ -3,6 +3,7 @@ import { Badge, Spin, Tabs } from "antd";
 import useMergeValue from "use-merge-value";
 import React from "react";
 import classNames from "classnames";
+import { connect } from "dva";
 import NoticeList from "./NoticeList";
 import HeaderDropdown from "../HeaderDropdown";
 import styles from "./index.less";
@@ -39,7 +40,7 @@ const NoticeIcon = props => {
         showClear,
         showViewMore
       } = child.props;
-      const len = list && list.length ? list.length : 0;
+      const len = list && Object.keys(list).length ? Object.keys(list).length : 0;
       const msgCount = count || count === 0 ? count : len;
       const tabTitle = msgCount > 0 ? `${title} (${msgCount})` : title;
       panes.push(
@@ -69,10 +70,18 @@ const NoticeIcon = props => {
   };
 
   const { className, count, bell } = props;
-  const [visible, setVisible] = useMergeValue(false, {
-    value: props.popupVisible,
-    onChange: props.onPopupVisibleChange
-  });
+  // const [visible, setVisible] = useMergeValue(false, {
+  //   value: props.popupVisible,
+  //   onChange: props.onPopupVisibleChange
+  // });
+  const visible = props.visible;
+  const setVisible = v => {
+    props.dispatch({
+      type: 'global/changeNoticesVisible',
+      payload: v,
+    })
+  }
+
   const noticeButtonClass = classNames(className, styles.noticeButton);
   const notificationBox = getNotificationBox();
   const NoticeBellIcon = bell || <BellOutlined className={styles.icon} />;
@@ -117,4 +126,6 @@ NoticeIcon.defaultProps = {
     "https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
 };
 NoticeIcon.Tab = NoticeList;
-export default NoticeIcon;
+export default connect(({ global }) => ({ visible: global.noticesVisible }))(
+  NoticeIcon
+);

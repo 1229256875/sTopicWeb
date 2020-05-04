@@ -3,7 +3,12 @@ const GlobalModel = {
   namespace: "global",
   state: {
     collapsed: false,
-    notices: []
+    notices: [],
+    noticesModal: {
+      visible: false,
+    },
+    noticesVisible: false,
+    notices2: {},
   },
   effects: {
     *fetchNotices(_, { call, put, select }) {
@@ -98,7 +103,19 @@ const GlobalModel = {
         ...state,
         notices: state.notices.filter(item => item.type !== payload)
       };
-    }
+    },
+
+    changeNoticesModal(state, { payload }) {
+      return { ...state, noticesModal: payload }
+    },
+
+    changeNoticesVisible(state, { payload }) {
+      return { ...state, noticesVisible: payload }
+    },
+
+    changeNotices2(state, { payload }) {
+      return { ...state, notices2: payload }
+    },
   },
   subscriptions: {
     setup({ history }) {
