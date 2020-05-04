@@ -6,6 +6,7 @@ import groupBy from "lodash/groupBy";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { url } from "@/utils/const";
+import TalkModal from "./TalkModal";
 import NoticeIcon from "../NoticeIcon";
 import styles from "./index.less";
 
@@ -236,14 +237,14 @@ const GlobalHeaderRight = props => {
         onViewMore={showModal}
         clearClose
       >
-        {/*<NoticeIcon.Tab*/}
-        {/*  tabKey="notification"*/}
-        {/*  count={unreadMsg.notification}*/}
-        {/*  list={noticeData.notification}*/}
-        {/*  title="通知"*/}
-        {/*  emptyText="你已查看所有通知"*/}
-        {/*  showViewMore*/}
-        {/*/>*/}
+        {/* <NoticeIcon.Tab
+          tabKey="notification"
+          count={unreadMsg.notification}
+          list={noticeData.notification}
+          title="通知"
+          emptyText="你已查看所有通知"
+          showViewMore
+        /> */}
         <NoticeIcon.Tab
           tabKey="message"
           count={count}
@@ -252,16 +253,17 @@ const GlobalHeaderRight = props => {
           emptyText="您已读完所有消息"
           showViewMore
         />
-        {/*<NoticeIcon.Tab*/}
-        {/*  tabKey="event"*/}
-        {/*  title="待办"*/}
-        {/*  emptyText="你已完成所有待办"*/}
-        {/*  count={unreadMsg.event}*/}
-        {/*  list={noticeData.event}*/}
-        {/*  showViewMore*/}
-        {/*/>*/}
+        {/* <NoticeIcon.Tab
+          tabKey="event"
+          title="待办"
+          emptyText="你已完成所有待办"
+          count={unreadMsg.event}
+          list={noticeData.event}
+          showViewMore
+        /> */}
       </NoticeIcon>
-      <Modal
+      <TalkModal title="聊天框" visible={visible} onCancel={handleCancel} />
+       <Modal
         title="Basic Modal"
         visible={visible}
         onOk={handleOk}
@@ -270,7 +272,7 @@ const GlobalHeaderRight = props => {
         <p>Some contents...</p>
         <p>Some contents...</p>
         <p>Some contents...</p>
-      </Modal>
+      </Modal> 
     </div>
   );
 };

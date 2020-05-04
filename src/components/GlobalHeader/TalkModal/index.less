@@ -1,0 +1,60 @@
+.content {
+  display: flex;
+}
+
+.left {
+  width: 100px;
+  flex: 0 0 auto;
+  border-right: 1px solid #f0f0f0;
+  overflow-y: auto;
+}
+
+.nameItem {
+  min-height: 24px;
+  line-height: 24px;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.selectName {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.nameItem:hover {
+  // background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.right {
+  min-height: 500px;
+  max-height: 500px;
+  flex-grow: 1;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.read {
+  flex-grow: 1;
+  border-bottom: 1px solid #f0f0f0;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.message {
+  min-height: 24px;
+  line-height: 24px;
+  padding: 5px 15px;
+  display: flex;
+}
+
+.write {
+  flex: 0 0 auto;
+  border: 0;
+}
+
+.write:hover {
+  box-shadow: unset;
+}
