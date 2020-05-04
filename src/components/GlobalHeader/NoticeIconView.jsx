@@ -263,16 +263,7 @@ const GlobalHeaderRight = props => {
         /> */}
       </NoticeIcon>
       <TalkModal title="聊天框" visible={visible} onCancel={handleCancel} />
-       <Modal
-        title="Basic Modal"
-        visible={visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal> 
+        
     </div>
   );
 };
