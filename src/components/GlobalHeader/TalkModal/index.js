@@ -112,7 +112,6 @@ const TalkModal = props => {
   return (
     <Modal
       {...restProps}
-      visible
       bodyStyle={{ padding: 0 }}
       okText="发送"
       cancelButtonProps={{ style: { display: "none" } }}
