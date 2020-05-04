@@ -37,13 +37,24 @@ const NoticeList = ({
             [styles.read]: item.read
           }); // eslint-disable-next-line no-nested-ternary
 
-          const leftIcon = item.avatar ? (
-            typeof item.avatar === "string" ? (
-              <Avatar className={styles.avatar} src={item.avatar} />
+          // const leftIcon = item.avatar ? (
+          //   typeof item.avatar === "string" ? (
+          //     <Avatar className={styles.avatar} src={item.avatar} />
+          //   ) : (
+          //     <span className={styles.iconElement}>{item.avatar}</span>
+          //   )
+          // ) : null;
+
+
+          // <Avatar className={styles.avatar} src={item.avatar} />
+          const leftIcon = item.fromCode ? (
+            typeof item.fromCode === "string" ? (
+              <Avatar className={styles.avatar} src={"http://127.0.0.1:9986/api/getImage/" + item.fromCode} />
             ) : (
               <span className={styles.iconElement}>{item.avatar}</span>
             )
           ) : null;
+
           return (
             <List.Item
               className={itemCls}
