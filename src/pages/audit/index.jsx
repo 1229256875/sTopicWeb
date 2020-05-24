@@ -10,7 +10,7 @@ export default () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 1000);
   }, []);
 
   const { Header, Footer, Content } = Layout;
@@ -18,7 +18,7 @@ export default () => {
   return (
     <div>
       <PageHeaderWrapper
-        content="这是一个新页面，从这里进行开发！"
+        // content="这是一个新页面，从这里进行开发！"
         className={styles.main}
       >
         <div

@@ -1,4 +1,4 @@
-import { getTime } from "@/api/api";
+import { getTime, updateTimeById } from "@/api/api";
 
 const Model = {
   namespace: "time",
@@ -14,6 +14,11 @@ const Model = {
       //   payload: response
       // });
       return response.data;
+    },
+
+    * updateTimeById(action, {call, put}) {
+      const rst = yield call(updateTimeById, action.payload);
+      return rst;
     }
   },
   reducers: {

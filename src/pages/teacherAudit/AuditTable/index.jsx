@@ -8,10 +8,13 @@ import {
   message,
   Modal,
   Spin,
-  Input
+  Input,
+  Tooltip,
 } from "antd";
 
 import { connect } from "dva";
+import { Link } from 'umi'
+
 
 //button显示按钮文字
 const statusList = {
@@ -29,9 +32,12 @@ const typeList = {
 const TimeTable = ({ dispatch }) => {
   const [timeData, setTimeData] = useState([]);
   const [count, setCount] = useState(0);
-  const [type, setType] = useState(0);
+  const [type, setType] = useState(1);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  //操作头标题
+  const [infoText, setInfoText] = useState('操作')
 
   //返回值
   const [response, setResponse] = useState("");
@@ -43,18 +49,15 @@ const TimeTable = ({ dispatch }) => {
     {
       title: "课题名称",
       dataIndex: "topicName",
-      key: "topicName"
       // render: text => <a>{text}</a>,
     },
     {
       title: "学生姓名",
       dataIndex: "studentName",
-      key: "studentName"
     },
     {
       title: "课题类型",
       dataIndex: "mode",
-      key: "mode",
       render: text => {
         let rst = typeList[text] || "未知";
         return <div>{rst}</div>;
@@ -63,60 +66,101 @@ const TimeTable = ({ dispatch }) => {
     {
       title: "学生专业",
       dataIndex: "className",
-      key: "className"
+      render: (text, record) => {
+        let { className, facultyName } = record
+        return <Tooltip title={className}>
+          {facultyName}
+        </Tooltip>
+      }
     },
     {
       title: "课程信息",
       dataIndex: "info",
-      key: "info"
+      render: (text, record) => {
+        const { info } = record
+        let rstt = info;
+        if (info && info.length > 6) {
+          rstt = rstt.substring(0, 6) + '...'
+        }
+        return <Tooltip title={info}>
+          <span>{rstt}</span>
+        </Tooltip>
+      }
     },
     {
-      title: "操作",
+      title: `${infoText}`,
       key: "tags",
       render: (text, record) => {
-        return (
-          <span>
-            <Button
-              type={"primary"}
-              onClick={() => {
-                showHand();
-              }}
-            >
-              {statusList[type]}
-            </Button>
-            <Modal
-              title="审核"
-              visible={visible}
-              confirmLoading={false}
-              onCancel={handleCancel}
-              footer={null}
-            >
-              <TextArea
-                placeholder="请输入审核理由"
-                rows={3}
-                onChange={e => {
-                  setResponse(e.target.value);
-                }}
-              />
-              <button
+        const { status } = record
+
+        if (status === 1) {
+          return <div><Button
+            type={'primary'}
+          >
+            <Link to={{ pathname: "/teacherAudit/topicInfo", state: { record } }}>查看</Link >
+          </Button>
+          </div>
+        }
+        if (status === 2) {
+          const { teaReaso } = record
+          let rstt = teaReaso;
+          if (teaReaso && teaReaso.length > 6) {
+            rstt = rstt.substring(0, 6) + '...'
+          }
+          return <Tooltip title={teaReaso}>
+            <span>{rstt}</span>
+          </Tooltip>
+        }
+
+        if (status === 0) {
+          return (
+            <span>
+              <Button
+                type={"primary"}
                 onClick={() => {
-                  auditTopic(text.id, 1, response);
-                  handleCancel();
+                  showHand();
                 }}
               >
-                通过
-              </button>
-              <button
-                onClick={() => {
-                  auditTopic(text.id, 2, response);
-                  handleCancel();
-                }}
+                {statusList[type]}
+              </Button>
+              <Modal
+                title="审核"
+                visible={visible}
+                confirmLoading={false}
+                onCancel={handleCancel}
+                footer={[
+                  <Button
+                    onClick={() => {
+                      auditTopic(text.id, 2, response);
+                      handleCancel();
+                    }}
+                    danger
+                    type="primary"
+                  >
+                    拒绝
+              </Button>,
+                  <Button
+                    onClick={() => {
+                      auditTopic(text.id, 1, response);
+                      handleCancel();
+                    }}
+                    type="primary"
+                  >
+                    通过
+              </Button>,
+                ]}
               >
-                拒绝
-              </button>
-            </Modal>
-          </span>
-        );
+                <TextArea
+                  placeholder="请输入审核理由"
+                  rows={3}
+                  onChange={e => {
+                    setResponse(e.target.value);
+                  }}
+                />
+              </Modal>
+            </span>
+          );
+        }
       }
     }
   ];
@@ -131,12 +175,11 @@ const TimeTable = ({ dispatch }) => {
     setVisible(true);
   };
 
-  const auditTopic = (id, type, var0) => {
-    console.log(dispatch);
+  const auditTopic = (id, type1, var0) => {
     dispatch({
       type: "select/teacherAudit",
       payload: {
-        status: type,
+        status: type1,
         id: id,
         teaReaso: var0
       }
@@ -144,6 +187,7 @@ const TimeTable = ({ dispatch }) => {
       console.log("asd", rst);
       if (rst.status === 200) {
         message.success("审核成功");
+        getData(type)
       } else {
         message.error(rst.data);
       }
@@ -151,19 +195,27 @@ const TimeTable = ({ dispatch }) => {
   };
 
   const getData = type => {
+    if (type === 0) {
+      setInfoText('审核');
+    }
+    if (type === 1) {
+      setInfoText('操作')
+    }
+    if (type === 2) {
+      setInfoText('拒绝信息')
+    }
     dispatch({
       type: "select/searchTopic",
       payload: {
         status: type
       }
     }).then(da => {
-      console.log("da", da);
       setTimeData(da);
     });
   };
 
   useEffect(() => {
-    getData(0);
+    getData(type);
   }, []);
 
   return (
@@ -174,14 +226,15 @@ const TimeTable = ({ dispatch }) => {
           getData(value);
         }}
         value={type}
+        buttonStyle="solid"
       >
-        <Radio value={0}>未审核</Radio>
-        <Radio value={1}>审核已通过</Radio>
-        <Radio value={2}>已拒绝</Radio>
+        <Radio.Button value={1}>审核已通过</Radio.Button>
+        <Radio.Button value={0}>未进行审核</Radio.Button>
+        <Radio.Button value={2}>审核已拒绝</Radio.Button>
       </Radio.Group>
 
       <Divider />
-      <Table columns={columns} dataSource={timeData} rowKey={count} />
+      <Table columns={columns} dataSource={timeData} rowKey={'id'} />
     </div>
   );
 };

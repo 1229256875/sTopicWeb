@@ -141,6 +141,11 @@ export default {
               component: './teacherAudit',
             },
             {
+              path: '/teacherAudit/topicInfo',
+              authority: ['teacher'],
+              component: './teacherAudit/topicInfo',
+            },
+            {
               path: '/studentTopic',
               name: 'studentTopic',
               icon: 'smile',
@@ -236,6 +241,13 @@ export default {
                   name: 'score',
                   icon: 'smile',
                   component: './manage/score',
+                  authority: ['admin'],
+                },
+                {
+                  path: '/manage/personInfo',
+                  // name: 'personInfo',
+                  // icon: 'smile',
+                  component: './manage/personInfo',
                   authority: ['admin'],
                 },
               ],

@@ -122,8 +122,8 @@ function checkStatus(response) {
     return response;
   }
   if (status === 401) {
-    console.log("401问题");
     if (!window.location.href.includes("/user/login")) {
+      message.error('登陆异常，请重新登陆')
       window.localStorage.clear();
       history.push("/user/login");
       window.location.replace("/user/login");

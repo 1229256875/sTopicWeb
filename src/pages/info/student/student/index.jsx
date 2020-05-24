@@ -1,5 +1,5 @@
 import React, {useState, useEffect,} from "react";
-import {Button, Divider, Popconfirm, Spin, Table} from "antd";
+import {Button, Divider, Popconfirm, Spin, Table, Tooltip} from "antd";
 import {connect} from "dva";
 
 
@@ -14,35 +14,34 @@ const Tables = ({dispatch}) => {
     //   key: "id"
     // },
     {
-      title: "编号",
+      title: "学号",
       dataIndex: "code",
-      key: "code"
       // render: text => <a>{text}</a>,
     },
     {
       title: "姓名",
       dataIndex: "name",
-      key: 'name'
     },
     {
       title: "院系",
       dataIndex: "facultyName",
-      key: "mode",
+      render: (text, record) =>{
+        return <Tooltip title={record.className}>
+          <span>{record.facultyName}</span>
+        </Tooltip>
+      }
     },
     {
       title: "电话",
       dataIndex: "phone",
-      key: "phone"
     },
     {
       title: "qq",
       dataIndex: "qq",
-      key: "qq"
     },
     {
       title: "个人信息",
       dataIndex: "info",
-      key: "info"
     },
 
     {

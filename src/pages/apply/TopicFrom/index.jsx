@@ -10,7 +10,7 @@ import {
   DatePicker,
   Select,
   message,
-  Cascader
+  Cascader,
 } from "antd";
 import { connect } from "dva";
 
@@ -42,7 +42,7 @@ const Demo = props => {
     const { facultyId } = values;
     const value = {
       ...values,
-      facultyId: facultyId[facultyId.length - 1],
+      // facultyId: facultyId[facultyId.length - 1],
       year: year
     };
     dispatch({
@@ -64,6 +64,7 @@ const Demo = props => {
       type: "faculty/getFacultyList"
     }).then(rst => {
       if (rst !== null) {
+        console.log('rst', rst)
         setFaculty(rst);
       }
     });
@@ -80,8 +81,10 @@ const Demo = props => {
   };
 
   const topicNameChange = e => {
-    console.log(e);
+    console.log('修改名称:', e);
   };
+
+  const {Option} = Select;
 
   return (
     <Form
@@ -96,6 +99,7 @@ const Demo = props => {
       style={{
         width: 500
       }}
+      key={1}
     >
       <Form.Item
         label="课题名称: "
@@ -121,14 +125,14 @@ const Demo = props => {
           }
         ]}
       >
-        <Radio.Group value={2}>
+        <Radio.Group buttonStyle="solid" value={2}>
           <Radio.Button value={1}>理论型</Radio.Button>
           <Radio.Button value={2}>实践型</Radio.Button>
         </Radio.Group>
       </Form.Item>
       <Form.Item
         label="面向学年: "
-        // name="year"
+        name="year"
         rules={[
           {
             required: true,
@@ -143,13 +147,23 @@ const Demo = props => {
         name="facultyId"
         rules={[
           {
-            type: "array",
+            // type: "Object",
             required: true,
             message: "请选择面向院系!"
           }
         ]}
       >
-        <Cascader options={faculty} />
+        {/* <Cascader options={faculty} /> */}
+        <Select
+        style={{ width: '100%' }}
+      >
+        {faculty.map(d => (
+          <Option
+          key={d.id}
+          value={d.id}
+          >{d.facultyName}</Option>
+        ))}
+      </Select>
       </Form.Item>
 
       <Form.Item

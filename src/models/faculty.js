@@ -1,4 +1,4 @@
-import { getFacultyList } from "@/api/api";
+import { getFacultyList, getFacultyAll, deleteFaculty, insertFaculty, updateFaculty  } from "@/api/api";
 
 const Model = {
   namespace: "faculty",
@@ -14,6 +14,28 @@ const Model = {
       //   payload: response
       // });
       return response.data;
+    },
+
+    *getFacultyAll(action, {call, put}) {
+      const rst = yield call(getFacultyAll)
+      return rst.data;
+    },
+
+    *insertFaculty(action, {call, put}) {
+      const rst = yield call(insertFaculty, action.payload)
+      return rst;
+    },
+
+    *updateFaculty(action, {call, put}) {
+      console.log('asd', action.payload)
+      const rst = yield call(updateFaculty, action.payload);
+      return rst;
+    },
+
+    * deleteFaculty(action, {call, put}) {
+      console.log('asd', action.payload)
+       const rst = yield call(deleteFaculty, action.payload);
+      return rst;
     }
   },
   reducers: {

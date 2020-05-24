@@ -3,7 +3,8 @@ import {
   getTopicList,
   auditTopic,
   getHistoryTopic,
-  deleteTopic
+  deleteTopic,
+  updateTopic
 } from "@/api/api";
 
 const Model = {
@@ -33,6 +34,11 @@ const Model = {
     *getHistoryTopic({ payload }, { call, put }) {
       const response = yield call(getHistoryTopic, payload);
       return response.data;
+    },
+
+    * updateTopic({ payload }, { call }) {
+      const rst = yield call(updateTopic, payload);
+      return rst;
     },
 
     *deleteTopic({ payload }, { call, put }) {

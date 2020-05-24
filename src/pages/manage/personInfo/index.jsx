@@ -5,6 +5,7 @@ import { connect } from "dva";
 import { student, teacher, admin } from "./const";
 import styles from "./index.less";
 import { PageHeaderWrapper } from "@ant-design/pro-layout";
+import { withRouter } from 'umi'
 
 const layout = {
   labelCol: { span: 4 },
@@ -20,18 +21,20 @@ const sexSet = {
   男: 1,
   女: 2
 };
-const Page = ({ data, dispatch }) => {
+const Page = ({ location, data, dispatch }) => {
   const [personn, setPersonn] = useState([]);
 
+  const { state } = location;
+  const { record } = state;
+
+
+
+
   useEffect(() => {
-    dispatch({
-      type: "person/getPersonInfo"
-    }).then(rst => {
-      setPersonn(rst);
-    });
+    setPersonn(record)
   }, []);
 
-  useEffect(() => {}, [data]);
+  useEffect(() => { }, [data]);
 
   const changInfo = values => {
     dispatch({
@@ -56,31 +59,33 @@ const Page = ({ data, dispatch }) => {
     changInfo(values);
     console.log(values);
   };
-
-  const authority = getAuthority()?.[0];
+  
+  // 获取角色等级
+  // const authority = getAuthority()?.[0];
   const formList = {
-    student,
-    teacher,
-    admin
+    2: student,
+    1: teacher,
+    0: admin
   };
 
   return (
-    
-    Object.prototype.toString.call(data) === "[object Object]" &&
-    Object.keys(data)?.length > 0 && (
+
+    Object.prototype.toString.call(personn) === "[object Object]" &&
+    Object.keys(personn)?.length > 0 && (
       <PageHeaderWrapper
-      className={styles.main}
-    >
+        title={'用户信息'}
+        className={styles.main}
+      >
         <Form
           style={{
             marginTop: 30
           }}
           {...layout}
           onFinish={onSubmit}
-          initialValues={{ ...data, sex: sexList[data?.sex] }}
+          initialValues={{ ...personn, sex: sexList[personn?.sex] }}
         >
           <Row gutter={24}>
-            {(formList[authority] || []).map(
+            {(formList[personn.type] || []).map(
               ({ label, name, disabled = false }) => (
                 <Col span={12} key={name}>
                   <Form.Item
@@ -107,4 +112,8 @@ const Page = ({ data, dispatch }) => {
   );
 };
 
-export default connect(({ person }) => ({ data: person.personInfo }))(Page);
+export default connect(({ person }) => ({ data: person.personInfo }))(withRouter(Page));
+
+// export default () => {
+//   return <div>New Page</div>;
+// };

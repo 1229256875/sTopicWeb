@@ -31,6 +31,7 @@ const student = [
   {
     label: '院系',
     name: 'collegeName',
+    disabled: true
   },
   {
     label: "专业",
@@ -118,7 +119,7 @@ const admin = [
   {
     label: '院系',
     name: 'collegeName',
-    disabled: true
+    disabled: true,
   },
   {
     label: "qq",

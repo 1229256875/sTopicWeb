@@ -16,33 +16,27 @@ const Tables = ({dispatch}) => {
     {
       title: "编号",
       dataIndex: "code",
-      key: "code"
       // render: text => <a>{text}</a>,
     },
     {
       title: "姓名",
       dataIndex: "name",
-      key: 'name'
     },
     {
       title: "院系",
-      dataIndex: "facultyName",
-      key: "mode",
+      dataIndex: "collegeName",
     },
     {
       title: "电话",
       dataIndex: "phone",
-      key: "phone"
     },
     {
       title: "qq",
       dataIndex: "qq",
-      key: "qq"
     },
     {
       title: "个人信息",
       dataIndex: "info",
-      key: "info"
     },
 
     {
@@ -74,7 +68,6 @@ const Tables = ({dispatch}) => {
         type: 'manage/getPersonList',
         payload: payload
       }).then((rst) => {
-        console.log(rst);
         setData(rst)
       })
     }

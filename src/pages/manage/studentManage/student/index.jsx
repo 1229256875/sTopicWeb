@@ -1,11 +1,17 @@
-import React, {useState, useEffect,} from "react";
-import {Button, Divider, Popconfirm, Spin, Table} from "antd";
-import {connect} from "dva";
+import React, { useState, useEffect, } from "react";
+import { Button, Divider, Popconfirm, Spin, Table, Tooltip, Form } from "antd";
+import { connect } from "dva";
+import {Link} from 'umi'
 
 
-const Tables = ({dispatch}) => {
+const Tables = ({ dispatch }) => {
 
   const [data, setData] = useState([]);
+
+  const [formData, setFormData] = useState({})
+
+  const [form] = Form.useForm();
+
 
   const columns = [
     // {
@@ -14,35 +20,39 @@ const Tables = ({dispatch}) => {
     //   key: "id"
     // },
     {
-      title: "编号",
+      title: "学号",
       dataIndex: "code",
-      key: "code"
       // render: text => <a>{text}</a>,
     },
     {
       title: "姓名",
       dataIndex: "name",
-      key: 'name'
     },
     {
       title: "院系",
       dataIndex: "facultyName",
-      key: "mode",
     },
     {
       title: "电话",
       dataIndex: "phone",
-      key: "phone"
     },
     {
       title: "qq",
       dataIndex: "qq",
-      key: "qq"
     },
     {
       title: "个人信息",
       dataIndex: "info",
-      key: "info"
+      render: (text, record) => {
+        let info = text;
+        if (info && info.length > 6) {
+          info = info.substring(0, 6) + '...';
+        }
+        return <Tooltip title={text}>
+          <span>{info}</span>
+        </Tooltip>
+
+      }
     },
 
     {
@@ -51,19 +61,9 @@ const Tables = ({dispatch}) => {
       render: (text, record) => {
         return (
           <div>
-            <Button >
-              查看
+            <Button type={'primary'}>
+            <Link to={{pathname: "/manage/personInfo", state:{record}}}>查看</Link >
             </Button>
-            <Popconfirm
-              title={"Are you sure? "}
-              okText={"Yes"}
-              onConfirm={() => {
-                // deleteTopic(text.id);
-              }}
-              cancelText={"No"}
-            >
-              <Button>删除</Button>
-            </Popconfirm>
           </div>
         );
       }
@@ -76,6 +76,11 @@ const Tables = ({dispatch}) => {
     }
     getData(var1)
   }, []);
+
+  //清除form表单中的值
+  useEffect(() => {
+    form.resetFields();
+  }, [formData])
 
 
   const getData = payload => {
@@ -93,7 +98,17 @@ const Tables = ({dispatch}) => {
 
   return (
     <div>
-      <Divider/>
+      <Popconfirm
+        title={"Are you sure? "}
+        okText={"Yes"}
+        onConfirm={() => {
+          // deleteTopic(text.id);
+        }}
+        cancelText={"No"}
+      >
+        <Button>删除</Button>
+      </Popconfirm>
+      <Divider />
       <Table
         columns={columns}
         dataSource={data}

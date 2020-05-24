@@ -4,27 +4,31 @@ import { Spin } from "antd";
 import styles from "./index.less";
 import ListTable from "./ListTable";
 
+
+/**
+ * 对管理员来说,这个选题
+ */
 export default () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 500);
   }, []);
   return (
     <PageHeaderWrapper
-      content="这是一个新页面，从这里进行开发！"
       className={styles.main}
     >
       <div
         style={{
-          paddingTop: 10,
+          // paddingTop: 10,
           textAlign: "center"
         }}
       >
-        <ListTable />
         <Spin spinning={loading} size="large" />
+        <ListTable />
+        
       </div>
     </PageHeaderWrapper>
   );

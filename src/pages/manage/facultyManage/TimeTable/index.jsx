@@ -74,13 +74,12 @@ const TimeTable = ({ dispatch }) => {
     timeDate.push(moment(parseInt(startTime)))
     timeDate.push(moment(parseInt(endTime)))
     setCount(count+1)
+    console.log('asd', count)
     setVisible(true)
   }
 
 
   const handleOk = () => {
-    console.log('timeDate', timeDate)
-    console.log('selectDate', selectDate)
     selectDate.createTime=null,
     selectDate.updateTime=null;
     if (dispatch) {

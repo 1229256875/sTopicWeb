@@ -11,7 +11,11 @@ import {
   Form,
   Radio,
   DatePicker,
-  Cascader
+  Cascader,
+  Tooltip,
+  Popconfirm,
+  Select,
+
 } from "antd";
 
 import { connect } from "dva";
@@ -47,7 +51,7 @@ const tailLayout = {
 const TimeTable = ({ dispatch }) => {
   const [timeData, setTimeData] = useState([]);
   //院校信息
-  const [faculty, setFaculty] = useState();
+  const [faculty, setFaculty] = useState(null);
   const [count, setCount] = useState(0);
   //表单
   const [form] = Form.useForm();
@@ -59,6 +63,9 @@ const TimeTable = ({ dispatch }) => {
   const [visible, setVisible] = useState(false);
 
   const getFaculty = () => {
+    if (faculty !== null) {
+      return;
+    }
     dispatch({
       type: "faculty/getFacultyList"
     }).then(rst => {
@@ -68,18 +75,38 @@ const TimeTable = ({ dispatch }) => {
     });
   };
 
+  const confirm = e => {
+    dispatch({
+      type: "topic/auditTopic",
+      payload: {
+        id: e,
+        type: 0,
+      }
+    }).then(rst => {
+      if (rst && rst.status === 200) {
+        message.success('重新审核成功')
+        getData()
+      } else {
+        message.error(rst && rst.msg)
+      }
+    })
+  }
+
   const onFinish = values => {
     const { facultyIds } = values;
     const value = {
       ...values,
-      facultyId: facultyIds[facultyIds.length - 1]
+      // facultyId: facultyIds[facultyIds.length - 1],
+      id: formData.id,
     };
     dispatch({
-      type: "topic/insertTopic",
+      type: "topic/updateTopic",
       payload: value
     }).then(rst => {
       if (rst.status === 200) {
-        message.success("修改课题成功,请耐心等待审批!");
+        message.success("修改课题成功!");
+        handleCancel();
+        getData();
       } else {
         message.error(rst.msg);
       }
@@ -125,20 +152,39 @@ const TimeTable = ({ dispatch }) => {
       title: "审核状态",
       dataIndex: "type",
       key: "type",
-      render: type => {
+      render: (type, record) => {
         let state = "";
         let color = "";
         if (type === 0) {
           state = "未进行审核";
           color = "#1a09ff";
+          return <Tag color={color}>{state}</Tag>;
         } else if (type === 1) {
           state = "审核已通过";
           color = "#12dd0f";
+          return <Tooltip
+            title={record.response}
+            placement="bottomLeft"
+            visible={false}
+          ><Tag color={color}>{state}</Tag>
+          </Tooltip>;
         } else if (type === 2) {
           state = "审核未通过";
           color = "red";
+          return <Tooltip
+            title={record.response}
+            placement="bottomLeft"
+          >
+            <Popconfirm
+              title="是否重新申请 ?"
+              onConfirm={() => { confirm(record.id) }}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Tag color={color}>{state}</Tag>
+            </Popconfirm>
+          </Tooltip>;
         }
-        return <Tag color={color}>{state}</Tag>;
       }
     },
     {
@@ -149,38 +195,69 @@ const TimeTable = ({ dispatch }) => {
           <div>
             <Button
               onClick={() => {
-                showModal(text);
+                showModal(record);
               }}
             >
               查看
             </Button>
-            <Button
-              style={{
-                marginLeft: 20
+            <Popconfirm
+              title='是否要删除题目?'
+              onConfirm={() =>{
+                deleteTopic(record.id)
               }}
+              okText="Yes"
+              cancelText="No"
             >
-              删除
+              <Button
+                style={{
+                  marginLeft: 20
+                }}
+                type="primary"
+                danger
+              >
+                删除
             </Button>
+            </Popconfirm>
           </div>
         );
       }
     }
   ];
 
+  const deleteTopic = e => {
+    if (e) {
+      dispatch({
+        type: 'topic/deleteTopic',
+        payload: {
+          id: e,
+        }
+      }).then(rst => {
+        if (rst.status === 200) {
+          message.success('删除成功');
+          getData();
+        } else {
+          message.error(rst && rst.msg)
+        }
+      })
+    }
+  }
+
   const showModal = type => {
     getFaculty();
+    setCount(count + 1)
     console.log(type);
     setFormData(type);
     setVisible(true);
-  };
 
-  const handleOk = e => {
-    setVisible(false);
   };
 
   const handleCancel = e => {
     setVisible(false);
   };
+
+  useEffect(() => {
+    form.resetFields();
+  }, [formData])
 
   const getData = () => {
     dispatch({
@@ -195,19 +272,20 @@ const TimeTable = ({ dispatch }) => {
     getData();
   }, []);
 
+  const { Option } = Select;
+
   return (
     <div>
       <Divider />
       <Table
         columns={columns}
         dataSource={timeData}
-        // rowKey={count}
+      // rowKey={count}
       />
       <Modal
         title="题目详情"
         visible={visible}
         footer={false}
-        onOk={handleOk}
         onCancel={handleCancel}
         destroyOnClose
       >
@@ -221,6 +299,7 @@ const TimeTable = ({ dispatch }) => {
           style={{
             width: 500
           }}
+          key={count}
         >
           <Form.Item
             label="课题名称: "
@@ -253,7 +332,7 @@ const TimeTable = ({ dispatch }) => {
           </Form.Item>
           <Form.Item
             label="面向院系: "
-            name="facultyIds"
+            name="facultyId"
             rules={[
               {
                 required: true,
@@ -261,7 +340,18 @@ const TimeTable = ({ dispatch }) => {
               }
             ]}
           >
-            <Cascader options={faculty} />
+            <Select
+              style={{ width: '100%' }}
+            >
+              {faculty && faculty.map(d => (
+                <Option
+                  key={d.id}
+                  value={d.id}
+                >
+                  {d.facultyName}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item
@@ -279,7 +369,7 @@ const TimeTable = ({ dispatch }) => {
 
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="修改">
-              提交
+              修改
             </Button>
           </Form.Item>
         </Form>

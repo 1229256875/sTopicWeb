@@ -1,6 +1,7 @@
 import React, {useState, useEffect,} from "react";
 import {Button, Divider, Popconfirm, Spin, Table} from "antd";
 import {connect} from "dva";
+import {Link} from 'umi'
 
 
 const Tables = ({dispatch}) => {
@@ -49,23 +50,9 @@ const Tables = ({dispatch}) => {
       title: "操作",
       key: "tags",
       render: (text, record) => {
-        return (
-          <div>
-            <Button >
-              查看
-            </Button>
-            <Popconfirm
-              title={"Are you sure? "}
-              okText={"Yes"}
-              onConfirm={() => {
-                // deleteTopic(text.id);
-              }}
-              cancelText={"No"}
-            >
-              <Button>删除</Button>
-            </Popconfirm>
-          </div>
-        );
+        return  <Button type={'primary'} >
+            <Link to={{pathname: "/manage/personInfo", state:{record}}}>查看</Link >
+          </Button>
       }
     }
   ];

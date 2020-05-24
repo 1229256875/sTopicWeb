@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Divider, Button, message, Input, Popconfirm } from "antd";
+import { Table, Divider, Button, message, Input, Popconfirm, Tooltip, Modal, Form, Radio } from "antd";
 
 import { connect } from "dva";
 
-import {getAuthority} from "@/utils/authority";
+import { getAuthority } from "@/utils/authority";
 
 //mode 显示内容
 const typeList = {
@@ -23,46 +23,78 @@ const TimeTable = ({ dispatch }) => {
   const [topicData, setTopicData] = useState([]);
   const [count, setCount] = useState(0);
 
-  const columns = [
-    {
-      title: "Id",
-      dataIndex: "id",
-      key: "id"
+  //查看 Modal 显示按钮
+  const [wiveVisible, setWiveVisible] = useState(false);
+
+  const [formData, setFormData] = useState({});
+
+
+
+  const [form] = Form.useForm();
+
+  const layout = {
+    labelCol: {
+      span: 8
     },
+    wrapperCol: {
+      span: 12
+    }
+  };
+
+  const tailLayout = {
+    wrapperCol: {
+      offset: 8,
+      span: 12
+    }
+  };
+
+  const columns = [
+    // {
+    //   title: "Id",
+    //   dataIndex: "id",
+    //   key: "id"
+    // },
     {
       title: "课题名称",
       dataIndex: "topicName",
-      key: "topicName"
       // render: text => <a>{text}</a>,
     },
     {
       title: "课题类型",
       dataIndex: "mode",
-      key: "mode",
       render: mode => {
         let state = typeList[mode] || "未知";
         return <div>{state}</div>;
       }
     },
     {
+      title: '教师姓名',
+      dataIndex: 'teacherName',
+    },
+    {
       title: "面向学年",
       dataIndex: "year",
-      key: "year"
     },
     {
       title: "院系名称",
       dataIndex: "facultyName",
-      key: "facultyName"
     },
     {
       title: "课程信息",
       dataIndex: "info",
-      key: "info"
+      render: (text, record) => {
+        let info = text;
+        if (text && text.length > 8) {
+          info = info.substring(0, 8) + '...';
+        }
+        return <Tooltip title={text}>
+          {info}
+        </Tooltip>
+      }
     },
     {
       title: "审核状态",
       dataIndex: "type",
-      key: "type",
       render: type => {
         let text = auditList[type] || "未知";
         return <span>{text}</span>;
@@ -74,39 +106,20 @@ const TimeTable = ({ dispatch }) => {
       render: (text, record) => {
         return (
           <div>
-            <Popconfirm
-              title={"Are you sure? "}
-              okText={"Yes"}
-              onConfirm={() => {
-                deleteTopic(text.id);
-              }}
-              cancelText={"No"}
-            >
-              <Button>删除</Button>
-            </Popconfirm>
+            <Button onClick={() => {
+              setFormData(text);
+              setWiveVisible(true);
+            }}>查看</Button>
           </div>
         );
       }
     }
   ];
 
-  const deleteTopic = id => {
-    console.log("删除id ", id);
-    // dispatch({
-    //   type: "topic/deleteTopic",
-    //   payload: {
-    //     id: id
-    //   }
-    // }).then(rst => {
-    //   console.log(rst);
-    //   if (rst.status === 200) {
-    //     message.success("删除成功");
-    //     getData();
-    //   } else {
-    //     message.error(rst.msg);
-    //   }
-    // });
-  };
+  //清除form表单中的值
+  useEffect(() => {
+    form.resetFields();
+  }, [formData])
 
   const getData = () => {
     dispatch({
@@ -123,7 +136,21 @@ const TimeTable = ({ dispatch }) => {
     getData();
   }, []);
 
-  useEffect(() => {}, [topicData]);
+  const handleCancel = () => {
+    // setVisible(false);
+    setWiveVisible(false);
+  };
+
+  const onFinish = () => {
+
+  }
+
+
+  const onFinishFailed = () => {
+
+  }
+
+  useEffect(() => { }, [topicData]);
 
   return (
     <div>
@@ -131,8 +158,87 @@ const TimeTable = ({ dispatch }) => {
       <Table
         columns={columns}
         dataSource={topicData}
-        // rowKey={count}
+        rowKey={'id'}
       />
+
+      <Modal title="查看"
+        visible={wiveVisible}
+        confirmLoading={false}
+        onCancel={handleCancel}
+        footer={null}>
+
+        <Form
+          form={form}
+          {...layout}
+          name="basic"
+          initialValues={formData}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          style={{
+            width: 500
+          }}
+        >
+          <Form.Item
+            label="课题名称: "
+            name="topicName"
+            rules={[
+              {
+                required: true,
+                message: "请输入课题名称!"
+              }
+            ]}
+            size={300}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="课题类型: "
+            name="mode"
+            rules={[
+              {
+                required: true,
+                message: "请选择课题类型!"
+              }
+            ]}
+          >
+            <Radio.Group>
+              <Radio.Button value={1}>理论型</Radio.Button>
+              <Radio.Button value={2}>实践型</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label="面向院系: "
+            name="facultyName"
+            rules={[
+              {
+                message: "请选择面向院系!"
+              }
+            ]}
+          >
+            <Input disabled />
+          </Form.Item>
+
+          <Form.Item
+            label="课题信息: "
+            name="info"
+            rules={[
+              {
+                required: true,
+                message: "请输入课题信息!"
+              }
+            ]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+
+          <Form.Item {...tailLayout}>
+            <Button type="primary" htmlType="修改">
+              提交
+                  </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -31,9 +31,19 @@ export function getTime() {
   return http.get("/api/getTime");
 }
 
+//修改时间
+export function updateTimeById(params){
+  return http.post('/api/updateTimeById', params)
+}
+
 // 插入课题
 export function insertTopic(params) {
   return http.post("/api/insertTopic", params);
+}
+
+//修改题目  
+export function updateTopic(params) {
+  return http.post('/api/updateTopic', params)
 }
 
 //获取课题
@@ -60,6 +70,7 @@ export function deleteTopic(params) {
 export function getFacultyList() {
   return http.post("/api/getFacultyList");
 }
+
 
 //选题
 export function selectTopic(params) {

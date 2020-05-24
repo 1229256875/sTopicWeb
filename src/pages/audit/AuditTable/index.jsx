@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-
+import React, { useEffect, useState } from "react";
+import { CheckOutlined } from '@ant-design/icons';
 import {
   Table,
   Form,
@@ -11,16 +11,17 @@ import {
   Spin,
   Input,
   DatePicker,
-  Cascader
+  Cascader,
+  Tooltip
 } from "antd";
 
-import {connect} from "dva";
+import { connect } from "dva";
 
 //button显示按钮文字
 const statusList = {
   0: "审核",
-  1: "查看",
-  2: "查看"
+  1: "删除",
+  2: "删除"
 };
 //mode 显示内容
 const typeList = {
@@ -29,15 +30,20 @@ const typeList = {
   // default: '未知'
 };
 
-const TimeTable = ({dispatch}) => {
+const TimeTable = ({ dispatch }) => {
   const [timeData, setTimeData] = useState([]);
   const [count, setCount] = useState(0);
   const [type, setType] = useState(0);
   const [visible, setVisible] = useState(false);
   //查看 Modal 显示按钮
   const [wiveVisible, setWiveVisible] = useState(false);
+  const [dager, setDager] = useState(false);
+
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({});
+
+  const [deleteText, setDeleteText] = useState('')
+
+  const [deleteId, setDeleteId] = useState(0)
 
   //返回值
   const [response, setResponse] = useState("");
@@ -45,7 +51,6 @@ const TimeTable = ({dispatch}) => {
   //所处类型 0：未审核 1：已通过 2：已拒绝
   const [status, setStatus] = useState(0);
 
-  const [form] = Form.useForm();
   const layout = {
     labelCol: {
       span: 8
@@ -71,18 +76,23 @@ const TimeTable = ({dispatch}) => {
     {
       title: "课题名称",
       dataIndex: "topicName",
-      key: "topicName"
-      // render: text => <a>{text}</a>,
+      render: (text, record) => {
+        let info = text;
+        if (text && text.length > 6) {
+          info = info.substring(0, 6) + '...';
+        }
+        return <Tooltip title={text}>
+          {info}
+        </Tooltip>
+      }
     },
     {
       title: "教师",
       dataIndex: "teacherName",
-      key: "${id}"
     },
     {
       title: "课题类型",
       dataIndex: "mode",
-      key: "mode",
       render: text => {
         let rst = typeList[text] || "未知";
 
@@ -92,17 +102,23 @@ const TimeTable = ({dispatch}) => {
     {
       title: "面向学年",
       dataIndex: "year",
-      key: "year"
     },
     {
       title: "院系名称",
       dataIndex: "facultyName",
-      key: "facultyName"
     },
     {
       title: "课程信息",
       dataIndex: "info",
-      key: "info"
+      render: (text, record) => {
+        let info = text;
+        if (text && text.length > 8) {
+          info = info.substring(0, 8) + '...';
+        }
+        return <Tooltip title={text}>
+          {info}
+        </Tooltip>
+      }
     },
     {
       title: "操作",
@@ -112,14 +128,15 @@ const TimeTable = ({dispatch}) => {
           <span>
             <Button
               type={"primary"}
+              danger={dager}
               onClick={() => {
-                showHand(text);
+                showHand(record)
               }}
             >
               {statusList[type]}
             </Button>
             <Modal
-              title="审核"
+              title="审核题目"
               visible={visible}
               confirmLoading={false}
               onCancel={handleCancel}
@@ -132,102 +149,30 @@ const TimeTable = ({dispatch}) => {
                   setResponse(e.target.value);
                 }}
               />
-              <button
+              
+              <Button
                 onClick={() => {
                   auditTopic(text.id, 1, response);
                   handleCancel();
                 }}
+                color='#092b00'
+                type='primary'
+                style={{
+                  marginRight: 50
+                }}
               >
                 通过
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   auditTopic(text.id, 2, response);
                   handleCancel();
                 }}
+                type='primary'
+                danger
               >
                 拒绝
-              </button>
-            </Modal>
-
-            <Modal title="查看"
-                   visible={wiveVisible}
-                   confirmLoading={false}
-                   onCancel={handleCancel}
-                   footer={null}>
-
-              <Form
-                form={form}
-                {...layout}
-                name="basic"
-                initialValues={formData}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-                style={{
-                  width: 500
-                }}
-              >
-          <Form.Item
-            label="课题名称: "
-            name="topicName"
-            rules={[
-              {
-                required: true,
-                message: "请输入课题名称!"
-              }
-            ]}
-            size={300}
-          >
-            <Input/>
-          </Form.Item>
-
-          <Form.Item
-            label="课题类型: "
-            name="mode"
-            rules={[
-              {
-                required: true,
-                message: "请选择课题类型!"
-              }
-            ]}
-          >
-            <Radio.Group>
-              <Radio.Button value={1}>理论型</Radio.Button>
-              <Radio.Button value={2}>实践型</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
-            label="面向院系: "
-            name="facultyIds"
-            rules={[
-              {
-                required: true,
-                message: "请选择面向院系!"
-              }
-            ]}
-          >
-            {/*<Cascader options={faculty} />*/}
-          </Form.Item>
-
-          <Form.Item
-            label="课题信息: "
-            name="info"
-            rules={[
-              {
-                required: true,
-                message: "请输入课题信息!"
-              }
-            ]}
-          >
-            <Input.TextArea/>
-          </Form.Item>
-
-          <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="修改">
-              提交
-            </Button>
-          </Form.Item>
-        </Form>
+              </Button>
             </Modal>
           </span>
         );
@@ -235,20 +180,7 @@ const TimeTable = ({dispatch}) => {
     }
   ];
 
-  const {TextArea} = Input;
-
-  const onFinish = () => {
-
-  }
-
-  useEffect(() =>{
-    form.resetFields();
-  }, [formData])
-
-
-  const onFinishFailed = () => {
-
-  }
+  const { TextArea } = Input;
 
   const handleCancel = () => {
     setVisible(false);
@@ -256,19 +188,16 @@ const TimeTable = ({dispatch}) => {
   };
 
   const showHand = (text) => {
-    const {type} = text;
+    const { topicName, type, id } = text;
     //未审核
     if (type === 0) {
       setVisible(true)
-    } else if (type === 1) { //审核通过 只能查看
-      // const {FormInstance} = form;
-      setFormData(text);
-      setWiveVisible(true);
-    } else if (type === 2) {// 审核未通过,理论 教师可以重新申请一次
-      setFormData(text);
+    } else {
+      setDeleteId(id);
+      setDeleteText(topicName);
       setWiveVisible(true);
     }
-    setVisible(true);
+
   };
 
   const auditTopic = (id, var1, var0) => {
@@ -290,6 +219,26 @@ const TimeTable = ({dispatch}) => {
     });
   };
 
+  const deleteTopic = id => {
+    console.log("删除id ", id);
+    // dispatch({
+    //   type: "topic/deleteTopic",
+    //   payload: {
+    //     id: id
+    //   }
+    // }).then(rst => {
+    //   console.log(rst);
+    //   if (rst.status === 200) {
+    //     message.success("删除成功");
+    //     getData();
+    //     setWiveVisible(false)
+    //   } else {
+    //     message.error(rst.msg);
+    //   }
+    // });
+    setWiveVisible(false)
+  };
+
   const getData = type => {
     dispatch({
       type: "topic/getTopicList",
@@ -308,19 +257,34 @@ const TimeTable = ({dispatch}) => {
   return (
     <div>
       <Radio.Group
-        onChange={({target: {value}}) => {
+        onChange={({ target: { value } }) => {
           setType(value);
           getData(value);
+          if (value && value !== 0) {
+            setDager(true)
+          } else {
+            setDager(false)
+          }
         }}
         value={type}
+        buttonStyle="solid"
       >
-        <Radio value={0}>未审核</Radio>
-        <Radio value={1}>审核已通过</Radio>
-        <Radio value={2}>已拒绝</Radio>
+        <Radio.Button value={0}>未审核</Radio.Button>
+        <Radio.Button value={1}>审核已通过</Radio.Button>
+        <Radio.Button value={2}>已拒绝</Radio.Button>
       </Radio.Group>
 
-      <Divider/>
-      <Table columns={columns} dataSource={timeData} rowKey={'id'}/>
+      <Divider />
+      <Table columns={columns} dataSource={timeData} rowKey={'id'} />
+      <Modal
+        title="删除题目"
+        visible={wiveVisible}
+        confirmLoading={false}
+        onCancel={handleCancel}
+        onOk={() => { deleteTopic(deleteId) }}
+      >
+        确认删除题目: {deleteText}
+      </Modal>
     </div>
   );
 };
