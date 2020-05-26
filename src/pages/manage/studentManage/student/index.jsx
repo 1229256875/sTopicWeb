@@ -1,5 +1,5 @@
 import React, { useState, useEffect, } from "react";
-import { Button, Divider, Popconfirm, Spin, Table, Tooltip, Form } from "antd";
+import { Button, Divider, Popconfirm, Spin, Table, Tooltip, Form, Row } from "antd";
 import { connect } from "dva";
 import {Link} from 'umi'
 
@@ -98,6 +98,8 @@ const Tables = ({ dispatch }) => {
 
   return (
     <div>
+      
+      <Row>
       <Popconfirm
         title={"Are you sure? "}
         okText={"Yes"}
@@ -108,6 +110,13 @@ const Tables = ({ dispatch }) => {
       >
         <Button>删除</Button>
       </Popconfirm>
+      <Button >
+        添加学生
+      </Button>
+      <Button>
+        批量添加
+      </Button>
+      </Row>
       <Divider />
       <Table
         columns={columns}
