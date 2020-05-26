@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Divider, Button, message, Input, Popconfirm } from "antd";
+import { Table, Divider, Button, message, Input, Popconfirm, Tooltip } from "antd";
 
 import { connect } from "dva";
 import { getAuthority } from "@/utils/authority";
@@ -11,16 +11,25 @@ const TimeTable = ({ dispatch }) => {
   const authority = getAuthority()?.[0];
 
   const columns = [
-    {
-      title: "Id",
-      dataIndex: "id",
-      key: "id"
-    },
+    // {
+    //   title: "Id",
+    //   dataIndex: "id",
+    //   key: "id"
+    // },
     {
       title: "课题名称",
       dataIndex: "topicName",
-      key: "topicName"
-      // render: text => <a>{text}</a>,
+      render: info => {
+        let tee = info;
+        if (tee && tee.length > 7) {
+          tee = tee.substring(0, 7) + '...';
+        }
+        return (
+          <Tooltip title={info}>
+            <span>{tee}</span>
+          </Tooltip>
+        );
+      }
     },
     {
       title: "课题类型",
@@ -49,17 +58,29 @@ const TimeTable = ({ dispatch }) => {
     {
       title: "课程信息",
       dataIndex: "info",
-      key: "info"
+      render: info => {
+        let tee = info;
+        if (tee && tee.length > 7) {
+          tee = tee.substring(0, 7) + '...';
+        }
+        return (
+          <Tooltip title={info}>
+            <span>{tee}</span>
+          </Tooltip>
+        );
+      }
     },
     {
       title: "操作",
       key: "tags",
       render: (text, record) => {
-        let a = "";
+        let a = "选题";
+        let dis = false; 
         if (authority.includes("student")) {
           a = "选题";
         } else {
-          a = "查看";
+          // a = "查看";
+          dis = true;
         }
         return (
           <span>
@@ -71,7 +92,8 @@ const TimeTable = ({ dispatch }) => {
                 selectTopic(text);
               }}
             >
-              <Button>{a}</Button>
+              <Button disabled={dis}
+              >{a}</Button>
             </Popconfirm>
           </span>
         );
@@ -89,11 +111,11 @@ const TimeTable = ({ dispatch }) => {
       console.log(rst);
       if (rst.status === 200) {
         message.success("选题成功");
+        getData()
       } else {
         message.error(rst.msg);
       }
     });
-    console.log(values);
   };
 
   const getData = () => {
@@ -117,7 +139,7 @@ const TimeTable = ({ dispatch }) => {
       <Table
         columns={columns}
         dataSource={timeData}
-        // rowKey={count}
+        rowKey={'id'}
       />
     </div>
   );

@@ -40,7 +40,17 @@ const TimeTable = ({dispatch}) => {
     {
       title: "课题名称",
       dataIndex: "topicName",
-      key: "topicName",
+      render: info => {
+        let tee = info;
+        if (tee && tee.length > 7){
+          tee = tee.substring(0, 7)+'...';
+        }
+        return (
+          <Tooltip title={info}>
+            <span>{tee}</span>
+          </Tooltip>
+        );
+      }
     },
     {
       title: "教师",
@@ -80,26 +90,30 @@ const TimeTable = ({dispatch}) => {
       dataIndex: "info",
       key: "info",
       render: info => {
+        let tee = info;
+        if (tee && tee.length > 6){
+          tee = tee.substring(0, 6)+'...';
+        }
         return (
           <Tooltip title={info}>
-            <span>{info}</span>
+            <span>{tee}</span>
           </Tooltip>
         );
       }
     },
-    {
-      title: "操作",
-      key: "tags",
-      render: (text, record) => {
-        return (
-          <span>
-            <Button onClick={() => {
-              onModal(text)
-            }}>查看</Button>
-          </span>
-        );
-      }
-    }
+    // {
+    //   title: "操作",
+    //   key: "tags",
+    //   render: (text, record) => {
+    //     return (
+    //       <span>
+    //         <Button onClick={() => {
+    //           onModal(text)
+    //         }}>查看</Button>
+    //       </span>
+    //     );
+    //   }
+    // }
   ];
 
   const onModal = (text) => {

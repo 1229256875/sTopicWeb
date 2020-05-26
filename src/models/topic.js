@@ -4,7 +4,10 @@ import {
   auditTopic,
   getHistoryTopic,
   deleteTopic,
-  updateTopic
+  updateTopic,
+  insertGrade,
+  getTopicGrade,
+  getSelectTopicInfo
 } from "@/api/api";
 
 const Model = {
@@ -44,7 +47,23 @@ const Model = {
     *deleteTopic({ payload }, { call, put }) {
       const response = yield call(deleteTopic, payload);
       return response;
+    },
+
+    *insertGrade({payload}, {call}) {
+      const rst = yield call(insertGrade, payload);
+      return rst;
+    },
+
+    *getTopicGrade({payload}, {call}){
+      const rst = yield call(getTopicGrade, payload);
+      return rst.data;
+    },
+
+    *getSelectTopicInfo({payload}, {call}) {
+      const rst = yield call(getSelectTopicInfo, payload);
+      return rst.data;
     }
+    
   },
   reducers: {}
 };

@@ -64,14 +64,14 @@ const GlobalHeaderRight = props => {
         ...notices2,
         ...(notices2[fromCode]
           ? {
-              [fromCode]: {
-                ...notices2[fromCode],
-                message: [
-                  ...notices2[fromCode].message,
-                  ...newNotice[fromCode].message
-                ]
-              }
+            [fromCode]: {
+              ...notices2[fromCode],
+              message: [
+                ...notices2[fromCode].message,
+                ...newNotice[fromCode].message
+              ]
             }
+          }
           : newNotice)
       });
     }
@@ -91,17 +91,19 @@ const GlobalHeaderRight = props => {
       // ws.send(JSON.stringify({ flag: 'wsUrl', data: "Hello WebSocket!" }));
     };
     wss.onmessage = msg => {
-      // console.log('接收服务端发过来的消息: %o', msg);
+      console.log('接收服务端发过来的消息: %o', msg.data);
       const msgJson = JSON.parse(msg.data);
       if (msgJson && msgJson?.type === 2) {
         setCount(msgJson.count);
       } else {
         const fromCode = Object.keys(msgJson)[0];
-
-        setNewNotice(msgJson);
-        setNewThree(msgJson[fromCode]);
+        if (!fromCode.includes('连接成功')) {
+          setNewNotice(msgJson);
+          setNewThree(msgJson[fromCode]);
+        }
       }
     };
+
     wss.onclose = e => {
       console.log("ws 连接关闭了");
       console.log(e);
@@ -263,7 +265,7 @@ const GlobalHeaderRight = props => {
         /> */}
       </NoticeIcon>
       <TalkModal title="聊天框" visible={visible} onCancel={handleCancel} />
-        
+
     </div>
   );
 };

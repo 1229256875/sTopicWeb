@@ -46,7 +46,7 @@ const Tables = ({dispatch}) => {
         return (
           <div>
             <Button >
-              查看
+              发消息
             </Button>
           </div>
         );

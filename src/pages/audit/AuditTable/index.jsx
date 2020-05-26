@@ -140,15 +140,17 @@ const TimeTable = ({ dispatch }) => {
               visible={visible}
               confirmLoading={false}
               onCancel={handleCancel}
-              footer={null}
-            >
-              <TextArea
-                placeholder="请输入审核理由"
-                rows={3}
-                onChange={e => {
-                  setResponse(e.target.value);
+              footer={[ 
+                <Button
+                onClick={() => {
+                  auditTopic(text.id, 2, response);
+                  handleCancel();
                 }}
-              />
+                type='primary'
+                danger
+              >
+                拒绝
+              </Button>,
               
               <Button
                 onClick={() => {
@@ -158,21 +160,22 @@ const TimeTable = ({ dispatch }) => {
                 color='#092b00'
                 type='primary'
                 style={{
-                  marginRight: 50
                 }}
               >
                 通过
-              </Button>
-              <Button
-                onClick={() => {
-                  auditTopic(text.id, 2, response);
-                  handleCancel();
+              </Button>,
+              
+              ]}
+            >
+              <TextArea
+                placeholder="请输入审核理由"
+                rows={3}
+                onChange={e => {
+                  setResponse(e.target.value);
                 }}
-                type='primary'
-                danger
-              >
-                拒绝
-              </Button>
+              />
+              
+             
             </Modal>
           </span>
         );
@@ -221,22 +224,22 @@ const TimeTable = ({ dispatch }) => {
 
   const deleteTopic = id => {
     console.log("删除id ", id);
-    // dispatch({
-    //   type: "topic/deleteTopic",
-    //   payload: {
-    //     id: id
-    //   }
-    // }).then(rst => {
-    //   console.log(rst);
-    //   if (rst.status === 200) {
-    //     message.success("删除成功");
-    //     getData();
-    //     setWiveVisible(false)
-    //   } else {
-    //     message.error(rst.msg);
-    //   }
-    // });
-    setWiveVisible(false)
+    dispatch({
+      type: "topic/deleteTopic",
+      payload: {
+        id: id
+      }
+    }).then(rst => {
+      console.log(rst);
+      if (rst.status === 200) {
+        message.success("删除成功");
+        getData();
+        setWiveVisible(false)
+      } else {
+        message.error(rst.msg);
+      }
+    });
+    // setWiveVisible(false)
   };
 
   const getData = type => {

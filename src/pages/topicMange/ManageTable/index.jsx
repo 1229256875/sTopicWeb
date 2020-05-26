@@ -122,7 +122,17 @@ const TimeTable = ({ dispatch }) => {
     {
       title: "课题名称",
       dataIndex: "topicName",
-      key: "topicName"
+      render: info => {
+        let tee = info;
+        if (tee && tee.length > 7) {
+          tee = tee.substring(0, 7) + '...';
+        }
+        return (
+          <Tooltip title={info}>
+            <span>{tee}</span>
+          </Tooltip>
+        );
+      }
     },
     {
       title: "课题类型",
@@ -146,7 +156,17 @@ const TimeTable = ({ dispatch }) => {
     {
       title: "课程信息",
       dataIndex: "info",
-      key: "info"
+      render: info => {
+        let tee = info;
+        if (tee && tee.length > 7) {
+          tee = tee.substring(0, 7) + '...';
+        }
+        return (
+          <Tooltip title={info}>
+            <span>{tee}</span>
+          </Tooltip>
+        );
+      }
     },
     {
       title: "审核状态",
@@ -194,6 +214,7 @@ const TimeTable = ({ dispatch }) => {
         return (
           <div>
             <Button
+              type={'primary'}
               onClick={() => {
                 showModal(record);
               }}
@@ -202,7 +223,7 @@ const TimeTable = ({ dispatch }) => {
             </Button>
             <Popconfirm
               title='是否要删除题目?'
-              onConfirm={() =>{
+              onConfirm={() => {
                 deleteTopic(record.id)
               }}
               okText="Yes"

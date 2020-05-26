@@ -37,6 +37,13 @@ instance.interceptors.request.use(
     // const TOKEN = localStorage.getItem('Token')
     // 演示的token（注意配置请求头，需要后端做cros跨域处理，我这里自己前端配的跨域）
     // const token = '1fd399bdd9774831baf555ae5979c66b';
+
+    if (config.url.includes('uploadReport')){
+      // config.headers["token"] = localStorage.getItem("Token");
+      config.headers["Content-Type"] = "multipart/form-data";
+      return config;
+    }
+
     if (config.method === "post") {
       config.data = qs.stringify(config.data);
     }

@@ -100,6 +100,9 @@ const Faculty = props => {
     dispatch({
       type: "faculty/getFacultyAll"
     }).then(data => {
+      if (data === null){
+        return;
+      }
       if (graphs) {
         graphs.data(data);
         graphs.changeData();

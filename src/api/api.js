@@ -118,3 +118,41 @@ export function updateFaculty(params) {
 export function deleteFaculty(params) {
   return http.get("/api/deleteFaculty", params);
 }
+
+
+//查询进度
+export function getReportList(params) {
+  return http.get('/api/getReportList', params);
+}
+
+
+//删除文件
+export function deleteReport(params) {
+  return http.post('/api/deleteReport', params);
+}
+
+//下载文件
+export function getReport(params) {
+  return http.get('/api/getReport', params);
+}
+
+//获取成绩
+export function getTopicGrade(params) {
+  return http.get('/api/getTopicGrade', params);
+}
+
+//修改成绩
+export function insertGrade(params) {
+  return http.post('/api/insertGrade', params);
+}
+
+//一次性获取 题目信息和成绩
+export function getSelectTopicInfo(params) {
+  return http.get('/api/getSelectTopicInfo', params)
+}
+
+//上传文件
+export function uploadReport(params) {
+  return http.post('/api/uploadReport', params)
+}
+
