@@ -1,12 +1,13 @@
 import styles from "./index.less";
 import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import React, { useState, useEffect } from "react";
-import { Layout, Spin, Table, Row, Col, Input, Typography, Tag, Timeline, Descriptions, Button, InputNumber, message, Upload } from "antd";
+import { Layout, Spin, Table, Row, Col, Input, Typography, Tag, Timeline, Descriptions, Button, InputNumber, message, Upload, Tooltip } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { connect } from "dva";
 import { withRouter } from 'umi'
 import moment from "moment";
 import { UploadOutlined, ArrowDownOutlined, DownloadOutlined } from '@ant-design/icons';
+import download from 'downloadjs';
 
 const singData = {
   1: '任务书',
@@ -38,7 +39,7 @@ const List = ({ dispatch }) => {
 
   const [childrenData, setChildrenData] = useState();
 
-
+  const [treeData, setTreeData] = useState()
 
   const getTimeline = (record) => {
 
@@ -57,8 +58,13 @@ const List = ({ dispatch }) => {
           selectId: record.id,
         }
       }).then(rst => {
+        setTreeData(rst)
         let now = 0;
         rst && rst.map(item => {
+          let lett = item.fileName;
+          if (lett.length > 9) {
+            lett = lett.substring(0, 9) + '... '
+          }
           now = now + 1;
           let times = moment(parseInt(Date.parse(item.updateTime))).format("YYYY-MM-DD HH:mm")
           children.push(
@@ -66,7 +72,10 @@ const List = ({ dispatch }) => {
               key={item.sing}
               label={times}
             >
-              {singData[item.sing] + '上传'}</Timeline.Item>
+              <Tooltip title={item.fileName}>
+                {lett}
+              </Tooltip>
+            </Timeline.Item>
           )
         })
         setCount(now)
@@ -121,47 +130,63 @@ const List = ({ dispatch }) => {
   }
 
 
+  
+  //获取下载列表
   const getDownLoad = () => {
     let now = [];
-    for (let i = 1; i <= count; i++) {
+    let i = 1;
+    // for (let i = 1; i <= count; i++) {
+      treeData && treeData.map(item => {
+        let butText = item.fileName;
+        if (butText.length > 7){
+          butText = butText.substring(0, 7)
+        }
       now.push(
         <Row style={{
           marginTop: 5
         }}>
           <Col span={8}>
-            <Upload 
-            fileList={null}
-            beforeUpload={(e) =>{beforeUpload(e, i, record.id)}}
+            <Upload
+              // fileList={null}
+              beforeUpload={(e) => { beforeUpload(e, item.sing, record.id) }}
             >
-            <Button
-              key={i + 100}
-            ><UploadOutlined />{singData[i]}上传</Button>
+              <Tooltip title={item.fileName}>
+              <Button
+                // key={ + 100}
+                // onClick={() => { upLoad(item.sing) }}
+              ><UploadOutlined />
+              
+                {butText} 修改
+              </Button>
+              </Tooltip>
             </Upload>
           </Col>
-          
+
           <Col span={8}>
+            <Tooltip title={item.fileName}>
             <Button
-              key={i + 100}
-              onClick={() => { downLoad(i) }}
-            ><DownloadOutlined/>{singData[i]}下载</Button>
+              // key={i + 100}
+              onClick={() => { downLoad(item.sing, item.fileName) }}
+            ><DownloadOutlined />{butText} 下载</Button>
+            </Tooltip>
           </Col>
-          
         </Row>
       )
     }
+    )
+   
     now.push(
       <Row style={{
         marginTop: 5
       }}>
         <Col span={8}>
           <Upload 
-            fileList={null}
             key={count + 101}
             beforeUpload={(e) =>{beforeUpload(e, count+ 1, record.id)}}
             >
             <Button
               key={count + 100}
-            ><UploadOutlined />{singData[count + 1]}上传</Button>
+            ><UploadOutlined />新文件上传</Button>
             </Upload>
         </Col>
         <Col span={8}>
@@ -176,16 +201,28 @@ const List = ({ dispatch }) => {
 
 
   //下载
-  const downLoad = (sing) => {
-    console.log('topc', record.id)
-    console.log('type', sing)
+  const downLoad = (sing, fileName) => {
+
+    dispatch({
+      type: 'report/getReport',
+      payload: {
+        sing: sing,
+        selectId: record.id
+      }
+    }).then(rst => {
+      console.log(rst)
+      // console.log(rst.getResponseHeader("Content-Disposition"))
+
+      // console.log(rst.headers['Content-Disposition'])
+      // console.log(rst.headers['reportFileName'])
+
+      const blod = new Blob([rst.data]);
+      if (rst) {
+        download(blod, fileName);
+      }
+    })
   }
 
-  //上传
-  const upLoad = (sing) => {
-    console.log('topc', record.id)
-    console.log('type', sing)
-  }
 
 
 

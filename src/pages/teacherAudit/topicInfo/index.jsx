@@ -1,13 +1,14 @@
 import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import React, { useState, useEffect } from "react";
-import { Layout, Spin, Table, Form, Row, Col, Input, Typography, Tag, Timeline, Descriptions, Button, InputNumber, message } from "antd";
+import { Layout, Spin, Table, Form, Row, Col, Input, Typography, Tag, Timeline, Descriptions, Button, InputNumber, message, Upload, Tooltip } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { connect } from "dva";
 import { withRouter } from 'umi'
 import moment from "moment";
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import styles from '../index.less'
-
+import download from 'downloadjs'
+import { XHRLoadLoadFile } from '@/axios/http'
 
 const singData = {
   1: '任务书',
@@ -40,6 +41,7 @@ const List = ({ info, dispatch }) => {
 
   const [formData, setFormData] = useState();
 
+  const [treeData, setTreeData] = useState()
 
   const getTimeline = () => {
 
@@ -58,8 +60,13 @@ const List = ({ info, dispatch }) => {
           selectId: record.id,
         }
       }).then(rst => {
+        setTreeData(rst)
         let now = 0;
         rst && rst.map(item => {
+          let lett = item.fileName;
+          if (lett.length > 9) {
+            lett = lett.substring(0, 9) + '... '
+          }
           now = now + 1;
           let times = moment(parseInt(Date.parse(item.updateTime))).format("YYYY-MM-DD HH:mm")
           children.push(
@@ -67,7 +74,10 @@ const List = ({ info, dispatch }) => {
               key={item.sing}
               label={times}
             >
-              {singData[item.sing] + '上传'}</Timeline.Item>
+              <Tooltip title={item.fileName}>
+                {lett}
+              </Tooltip>
+            </Timeline.Item>
           )
         })
         setCount(now)
@@ -90,29 +100,73 @@ const List = ({ info, dispatch }) => {
     form.resetFields();
   }, [formData])
 
+  //获取下载列表
   const getDownLoad = () => {
     let now = [];
-    for (let i = 1; i <= count; i++) {
+    let i = 1;
+    // for (let i = 1; i <= count; i++) {
+      treeData && treeData.map(item => {
+        let butText = item.fileName;
+        if (butText.length > 7){
+          butText = butText.substring(0, 7)
+        }
       now.push(
         <Row style={{
           marginTop: 5
         }}>
           <Col span={8}>
-            <Button
-              key={i + 100}
-              onClick={() => { upLoad(i) }}
-            ><UploadOutlined />{singData[i]}上传</Button>
+            <Upload
+              // fileList={null}
+              beforeUpload={(e) => { beforeUpload(e, item.sing, record.id) }}
+            >
+              <Tooltip title={item.fileName}>
+              <Button
+                // key={ + 100}
+                // onClick={() => { upLoad(item.sing) }}
+              ><UploadOutlined />
+              
+                {butText} 修改
+              </Button>
+              </Tooltip>
+            </Upload>
           </Col>
+
           <Col span={8}>
+            <Tooltip title={item.fileName}>
             <Button
-              key={i + 100}
-              onClick={() => { downLoad(i) }}
-            ><DownloadOutlined />{singData[i]}下载</Button>
+              // key={i + 100}
+              onClick={() => { downLoad(item.sing, item.fileName) }}
+            ><DownloadOutlined />{butText} 下载</Button>
+            </Tooltip>
           </Col>
         </Row>
       )
-    }
+    })
+    // }
     setDownButton(now)
+  }
+
+
+  //上传
+  const beforeUpload = (file, sing, selectId) => {
+    const formData = new FormData();
+    formData.append('multipart', file)
+    formData.append('sing', sing)
+    formData.append('selectId', selectId)
+    if (dispatch) {
+      dispatch({
+        type: 'report/insertReport',
+        payload: formData,
+      }).then(rst => {
+        if (rst && rst.status === 200) {
+          message.success(file.name + '文件上传成功');
+          getTimeline(record)
+          setCount(count + 1)
+        } else {
+          message.error('文件上传失败： ' + rst.msg)
+        }
+      })
+    }
   }
 
   //获取成绩
@@ -129,6 +183,7 @@ const List = ({ info, dispatch }) => {
     }
   }
 
+  //设置成绩
   const insertGrade = values => {
 
     const value = {
@@ -136,7 +191,6 @@ const List = ({ info, dispatch }) => {
       // facultyId: facultyIds[facultyIds.length - 1],
       id: record.id,
     };
-    console.log('123', value)
     if (dispatch) {
       dispatch({
         type: 'topic/insertGrade',
@@ -144,6 +198,7 @@ const List = ({ info, dispatch }) => {
       }).then(rst => {
         if (rst && rst.status === 200) {
           message.success('设置成绩成功')
+          getGrade();
         } else {
           message.error(rst.msg)
         }
@@ -152,10 +207,28 @@ const List = ({ info, dispatch }) => {
   }
 
   //下载
-  const downLoad = (sing) => {
-    console.log('topc', record.id)
-    console.log('type', sing)
+  const downLoad = (sing, fileName) => {
+
+    dispatch({
+      type: 'report/getReport',
+      payload: {
+        sing: sing,
+        selectId: record.id
+      }
+    }).then(rst => {
+      console.log(rst)
+      // console.log(rst.getResponseHeader("Content-Disposition"))
+
+      // console.log(rst.headers['Content-Disposition'])
+      // console.log(rst.headers['reportFileName'])
+
+      const blod = new Blob([rst.data]);
+      if (rst) {
+        download(blod, fileName);
+      }
+    })
   }
+
 
   //上传
   const upLoad = (sing) => {
@@ -219,10 +292,10 @@ const List = ({ info, dispatch }) => {
         border: '1px solid #f0f0f0'
       }}
     >
-      <Row gutter={[0, 5]} 
-      style={{
-        marginTop: 10
-      }}>
+      <Row gutter={[0, 5]}
+        style={{
+          marginTop: 10
+        }}>
         <Col span={4}></Col>
         <Col span={6}>
           <Form.Item

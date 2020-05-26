@@ -38,12 +38,16 @@ instance.interceptors.request.use(
     // 演示的token（注意配置请求头，需要后端做cros跨域处理，我这里自己前端配的跨域）
     // const token = '1fd399bdd9774831baf555ae5979c66b';
 
-    if (config.url.includes('uploadReport')){
+    if (config.url.includes('/api/getReportFile')){
       // config.headers["token"] = localStorage.getItem("Token");
       config.headers["Content-Type"] = "multipart/form-data";
+      config.responseType = 'blob'
       return config;
     }
-
+    if (config.url.includes('/api/uploadReport')) {
+      config.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      return config;
+    }
     if (config.method === "post") {
       config.data = qs.stringify(config.data);
     }
@@ -92,6 +96,9 @@ instance.interceptors.response.use(
     if (url.includes("/api/updateUser")) {
       localStorage.setItem("Token", response.data.data);
       return response.data;
+    }
+    if (url.includes("/api/getReportFile")){
+      return response;
     }
 
     return response.data;
@@ -181,6 +188,32 @@ class http {
   static async post(url, params) {
     return await instance.post(url, params);
   }
+}
+
+
+/**
+ * @XHRLoadLoadFile 无需表单，实现文件下载
+ * @param {String} url
+ */
+
+export const XHRLoadLoadFile = (e) =>{
+  let xhr = new XMLHttpRequest()
+  console.log(xhr.open)
+    xhr.open('get',url.http + e)
+    //如果需要请求头中这是token信息可以在这设置
+    xhr.setRequestHeader('Content-Type','application/json;charset=UTF-8')
+    xhr.setRequestHeader('token', localStorage.getItem("Token"))
+    xhr.responseType = 'blob'
+    xhr.send()
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState ===4 && xhr.status === 200){
+        // const blob = new Blob([xhr.response])
+        const disposition = xhr.getResponseHeader("Content-disposition"); //处理流文件
+        const re = /filename="(.*)"/gi // 必须确保response headers下content-disposition字段的filename格式正确（filename="文件名.扩展名"），否则导出文件会有问题
+        const match = re.exec(disposition)
+        downloadFun(xhr.response, match[1] || '')
+      }
+    }
 }
 
 export default http;

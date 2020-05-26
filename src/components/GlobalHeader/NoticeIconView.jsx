@@ -91,7 +91,7 @@ const GlobalHeaderRight = props => {
       // ws.send(JSON.stringify({ flag: 'wsUrl', data: "Hello WebSocket!" }));
     };
     wss.onmessage = msg => {
-      console.log('接收服务端发过来的消息: %o', msg.data);
+      // console.log('接收服务端发过来的消息: %o', msg.data);
       const msgJson = JSON.parse(msg.data);
       if (msgJson && msgJson?.type === 2) {
         setCount(msgJson.count);

@@ -133,7 +133,7 @@ export function deleteReport(params) {
 
 //下载文件
 export function getReport(params) {
-  return http.get('/api/getReport', params);
+  return http.get('/api/getReportFile', params);
 }
 
 //获取成绩
@@ -156,3 +156,13 @@ export function uploadReport(params) {
   return http.post('/api/uploadReport', params)
 }
 
+
+//成绩比例 修改
+export function updateScore(params) {
+  return http.post('/api/updateScore', params)
+}
+
+//成绩比例 获取
+export function getScore() {
+  return http.get('/api/getScore')
+}

@@ -1,9 +1,11 @@
 import {
   LogoutOutlined,
   SettingOutlined,
-  UserOutlined
+  UserOutlined,
+  PictureOutlined,
+  PictureFilled
 } from "@ant-design/icons";
-import { Avatar, Menu, Spin, Badge, Alert } from "antd";
+import { Avatar, Menu, Spin, Badge, Alert, Modal } from "antd";
 import React, { useEffect } from "react";
 import { connect } from "dva";
 import { router } from "umi";
@@ -11,8 +13,32 @@ import HeaderDropdown from "../HeaderDropdown";
 import styles from "./index.less";
 
 class AvatarDropdown extends React.Component {
+
+  state = { visible: false };
+
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
   onMenuClick = event => {
     const { key } = event;
+    
 
     if (key === "logout") {
       const { dispatch } = this.props;
@@ -28,7 +54,8 @@ class AvatarDropdown extends React.Component {
 
     if (key === "changePwd") {
       console.log(123);
-      this.onModle();
+      // this.onModle();
+      this.showModal();
       return;
     }
 
@@ -51,28 +78,35 @@ class AvatarDropdown extends React.Component {
       >
         {menu && (
           <Menu.Item key="center">
-            <UserOutlined/>
+            <UserOutlined />
             个人中心
           </Menu.Item>
         )}
         {menu && (
           <Menu.Item key="settings">
-            <SettingOutlined/>
+            <SettingOutlined />
             个人设置
           </Menu.Item>
         )}
-        {menu && <Menu.Divider/>}
+        {menu && <Menu.Divider />}
+
+        <Menu.Item key="changePicture">
+          <PictureFilled />
+          <span>修改头像</span>
+        </Menu.Item>
+
         <Menu.Item key="changePwd">
-          <SettingOutlined/>
+          <SettingOutlined />
           <span>修改密码</span>
         </Menu.Item>
 
         <Menu.Item key="logout">
-          <LogoutOutlined/>
+          <LogoutOutlined />
           退出登录
         </Menu.Item>
       </Menu>
     );
+
     return currentUser && currentUser.name ? (
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
@@ -82,21 +116,31 @@ class AvatarDropdown extends React.Component {
             src={"http://127.0.0.1:9986/api/getImage/" + currentUser.code}
             alt="avatar"
           />
-            <span className={styles.name}>{currentUser.name}</span>
+          <span className={styles.name}>{currentUser.name}</span>
+          <Modal
+            title="Basic Modal"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+          >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </Modal>
         </span>
       </HeaderDropdown>
     ) : (
-      <Spin
-        size="small"
-        style={{
-          marginLeft: 8,
-          marginRight: 8
-        }}
-      />
-    );
+        <Spin
+          size="small"
+          style={{
+            marginLeft: 8,
+            marginRight: 8
+          }}
+        />
+      );
   }
 }
 
-export default connect(({user}) => ({
+export default connect(({ user }) => ({
   currentUser: user.currentUser
 }))(AvatarDropdown);
