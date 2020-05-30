@@ -37,6 +37,8 @@ const List = ({ dispatch }) => {
   //进度条 的key
   const [count, setCount] = useState(0);
 
+  const [countt, setCountT] = useState(0)
+
   const [childrenData, setChildrenData] = useState();
 
   const [treeData, setTreeData] = useState()
@@ -109,6 +111,10 @@ const List = ({ dispatch }) => {
     getDownLoad()
   }, [count])
 
+  useEffect(() =>{
+    setCountT(countt + 1)
+  }, [downButton])
+
   const beforeUpload = (file, sing, selectId) =>{
     const formData = new FormData();
     formData.append('multipart', file)
@@ -122,6 +128,7 @@ const List = ({ dispatch }) => {
         if (rst && rst.status === 200){
           message.success(file.name + '文件上传成功');
           getTimeline(record)
+          getDownLoad()
         }else {
           message.error('文件上传失败： ' + rst.msg)
         }
@@ -258,7 +265,7 @@ const List = ({ dispatch }) => {
     }}>
       <Col span={12}><Timeline mode={'alternate'}>{childrenData}</Timeline></Col>
       <Col span={12}>
-        {downButton}
+        <div>{downButton}</div>
       </Col>
     </Row>
   </div> : <Row ><Title level={4}>未选择任何题目</Title></Row>

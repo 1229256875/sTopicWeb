@@ -195,12 +195,19 @@ export default {
               authority: ['admin'],
               component: './audit',
             },
+            // {
+            //   path: '/history',
+            //   name: 'history',
+            //   icon: 'smile',
+            //   authority: ['teacher','student'],
+            //   component: './history',
+            // },
             {
-              path: '/history',
+              path: '/historyManage',
               name: 'history',
               icon: 'smile',
               // authority: ['admin'],
-              component: './history',
+              component: './historyManage',
             },
             {
               name: 'manage',

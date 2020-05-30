@@ -3,41 +3,54 @@ import {
   SettingOutlined,
   UserOutlined,
   PictureOutlined,
-  PictureFilled
+  PictureFilled,
+  DownOutlined,
 } from "@ant-design/icons";
-import { Avatar, Menu, Spin, Badge, Alert, Modal, Form, Input, Button, Row, Col } from "antd";
+import { Avatar, Menu, Spin, Badge, Alert, Modal, Form, Input, Button, message, Popconfirm, Row, Col, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import { connect } from "dva";
 import { router } from "umi";
 import HeaderDropdown from "../HeaderDropdown";
 import styles from "./index.less";
+import time from "@/pages/manage/time";
+import ImgCrop from 'antd-img-crop';
 
-const AvatarDropdown = (props) =>{
+
+const AvatarDropdown = (props) => {
 
   // const { dispatch } = props;
 
-  const {dispatch, currentUser = {
+  const { dispatch, currentUser = {
     avatar: "",
     name: ""
   },
-  menu } = props;
+    menu } = props;
 
   const [state, setState] = useState(false);
 
+  const [picture, setPicture] = useState(false)
+
   const [form] = Form.useForm();
 
+  const [avatarList, setAvatarList] = useState()
+
+  const [avatar, setAvatar] = useState()
+
+  const [page, setPage] = useState(1)
+
   const showModal = () => {
-   setState(true)
+    setState(true)
   };
 
   const handleOk = e => {
     console.log(e);
-   setState(false)
+    setState(false)
   };
 
   const handleCancel = e => {
-    console.log(e);
+    // console.log(e);
     setState(false)
+    setPicture(false)
   };
 
   const onMenuClick = event => {
@@ -61,8 +74,77 @@ const AvatarDropdown = (props) =>{
       return;
     }
 
+    if (key === 'changePicture') {
+      getPictureList()
+      setPicture(true)
+      return;
+    }
+
     router.push(`/account/${key}`);
   };
+
+  const getPictureList = (page = 1, count = 10) => {
+    const value = {
+      page: page,
+      count: count,
+    }
+
+    if (dispatch) {
+      dispatch({
+        type: 'user/getPictureList',
+        payload: value
+      }).then(rst => {
+        setAvatarList(rst)
+      })
+    }
+  }
+
+  const setPicturea = id =>{
+    if (dispatch){
+      dispatch({
+        type: 'user/setPicture',
+        payload:{
+          id: id,
+        }
+      }).then(rst =>{
+        if (rst && rst.status === 200){
+          message.success("修改成功")
+        }else{
+          message.error("修改失败")
+        }
+      })
+    }
+  }
+
+  //获取头像显示
+  useEffect(() => {
+    const o = []
+    avatarList && avatarList.map(item => {
+      const a = 'data:image/png;base64,' + item.picture;
+      // o.push(<img width="100" height="100" src={a}></img>)
+      o.push(
+        <Popconfirm
+          title="是否选择改头像作为自己的头像?"
+          onConfirm={() => setPicturea(item.id)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Avatar
+            size={64}
+            src={a}
+            srcSet={a}
+            icon={<UserOutlined />}
+          />
+        </Popconfirm>
+      )
+    })
+    o.push(<Button onClick={() =>{
+      getPictureList(page+1, 10)
+      setPage(page + 1)
+    }}><DownOutlined />下一页</Button>)
+    setAvatar(o)
+  }, [avatarList])
+
 
   const layout = {
     labelCol: { span: 6 },
@@ -72,8 +154,28 @@ const AvatarDropdown = (props) =>{
     wrapperCol: { offset: 8, span: 16 },
   };
 
-  const changePwd = e =>{
-    console.log(e)
+  const changePwd = e => {
+    if (e.newPwd === e.newPwd1) {
+      if (e.newPwd.length < 6 || e.newPwd > 16) {
+        message.error("密码长度为 6 ～ 16");
+        return;
+      }
+      console.log(e)
+      dispatch({
+        type: 'login/changePwd',
+        payload: e
+      }).then(rst => {
+        if (rst && rst.status === 200) {
+          message.success('修改密码成功')
+          handleCancel()
+          form.resetFields()
+        } else {
+          message.error(rst && rst.msg)
+        }
+      })
+    } else {
+      message.error('新密码两次输入不一致')
+    }
   }
 
   const menuHeaderDropdown = (
@@ -124,34 +226,38 @@ const AvatarDropdown = (props) =>{
         />
         <span className={styles.name}>{currentUser.name}</span>
         <Modal
-          title="Basic Modal"
+          title="修改密码"
           visible={state}
           onOk={handleOk}
           onCancel={handleCancel}
           footer={null}
         >
-        
+
           <Form
-          onFinish={changePwd}
-          {...layout} 
-          form={form}>
+            onFinish={changePwd}
+            {...layout}
+            form={form}>
             <Form.Item
               label={'旧密码'}
-              name={'oldPwd'}>
-              <Input.Password />
+              name={'oldPwd'}
+              rules={[{ required: true, message: '请输入旧密码' }]}
+            >
+              <Input.Password placeholder="请输入旧密码" />
             </Form.Item>
 
             <Form.Item
-            label={'新密码'}
-            name={'newPwd'}
+              label={'新密码'}
+              name={'newPwd'}
+              rules={[{ required: true, message: '请输入新密码' }]}
             >
-              <Input.Password />
+              <Input.Password placeholder="请输入新密码" />
             </Form.Item>
             <Form.Item
-            label={'新密码'}
-            name={'newPwd1'}
+              label={'重复新密码'}
+              name={'newPwd1'}
+              rules={[{ required: true, message: '请再次输入新密码' }]}
             >
-              <Input.Password />
+              <Input.Password placeholder="请再次输入新密码" />
             </Form.Item>
 
             <Form.Item {...tailLayout}>
@@ -159,6 +265,32 @@ const AvatarDropdown = (props) =>{
               > 修改密码</Button>
             </Form.Item>
           </Form>
+        </Modal>
+
+
+        <Modal
+          title="修改头像"
+          visible={picture}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          footer={null}
+          width='45%'
+        >
+          <Row>{avatar}</Row>
+          <Row> 
+
+          <ImgCrop rotate>
+      <Upload
+        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+        listType="picture-card"
+        fileList={fileList}
+        onChange={onChange}
+        onPreview={onPreview}
+      >
+        {fileList.length < 5 && '+ Upload'}
+      </Upload>
+    </ImgCrop>
+          </Row>
         </Modal>
       </span>
     </HeaderDropdown>

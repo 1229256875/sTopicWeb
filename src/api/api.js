@@ -6,6 +6,21 @@ export function Login(params) {
   return http.post("/api/login", params);
 }
 
+//修改密码
+export function changePwd(params) {
+  return http.post('/api/changePwd', params);
+}
+
+//获取分页头像
+export function getPictureList(params) {
+  return http.post('/api/getPictureList', params);
+}
+
+//修改头像
+export function setPicture(params) {
+  return http.post('/api/setPicture', params);
+}
+
 // 验证账号
 export function Verify(params) {
   return http.get("/api/verify", params);
@@ -101,7 +116,7 @@ export function getImage(params) {
 /** *=============================================== */
 // 获取院系信息
 export function getFacultyAll() {
-  return http.get("/api/getFacultyAll");
+  return http.post("/api/getFacultyAll");
 }
 
 // 添加院系
@@ -116,7 +131,7 @@ export function updateFaculty(params) {
 
 // 删除院系
 export function deleteFaculty(params) {
-  return http.get("/api/deleteFaculty", params);
+  return http.post("/api/deleteFaculty", params);
 }
 
 

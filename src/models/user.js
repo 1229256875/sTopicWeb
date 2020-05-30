@@ -1,5 +1,5 @@
 import {queryCurrent, query as queryUsers} from "@/services/user";
-import {getPersonInfo, getImage} from "@/api/api";
+import {getPersonInfo, getImage, getPictureList, setPicture} from "@/api/api";
 import {act} from "react-dom/test-utils";
 
 const UserModel = {
@@ -28,7 +28,19 @@ const UserModel = {
     * getImage({payload}, {call, put}) {
       const ret = yield call(getImage, payload);
       return ret;
-    }
+    },
+
+    * getPictureList({payload}, {call, put}) {
+      const ret = yield call(getPictureList, payload);
+      return ret.data;
+    },
+
+    * setPicture({payload}, {call, put}) {
+      const ret = yield call(setPicture, payload);
+      return ret;
+    },
+
+
   },
   reducers: {
     saveCurrentUser(state, action) {

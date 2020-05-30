@@ -3,7 +3,7 @@ import { router } from "umi";
 import { fakeAccountLogin, getFakeCaptcha } from "@/services/login";
 import { setAuthority } from "@/utils/authority";
 import { getPageQuery } from "@/utils/utils";
-import { Login, Verify, getPersonInfo } from "@/api/api";
+import { Login, Verify, getPersonInfo, changePwd } from "@/api/api";
 import { routerRedux } from "dva/router";
 
 const Model = {
@@ -16,6 +16,7 @@ const Model = {
     person: {}
   },
   effects: {
+
     *login({ payload }, { call, put }) {
       const response = yield call(Login, payload);  
       if (response.status === 200 && response.data.status === 200) {
@@ -36,6 +37,11 @@ const Model = {
 
     *getPerson({ payload }, { call, put }) {
       const response = yield call(getPersonInfo, payload);
+    },
+
+    * changePwd({payload}, {call}) {
+      const rst = yield call(changePwd, payload);
+      return rst;
     },
 
     logout() {
