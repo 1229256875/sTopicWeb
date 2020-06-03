@@ -1,11 +1,12 @@
 import {queryCurrent, query as queryUsers} from "@/services/user";
-import {getPersonInfo, getImage, getPictureList, setPicture} from "@/api/api";
+import {getPersonInfo, getImage, getPictureList, setPicture, insertPicture, register, deleteUser, importPersons} from "@/api/api";
 import {act} from "react-dom/test-utils";
 
 const UserModel = {
   namespace: "user",
   state: {
-    currentUser: {}
+    currentUser: {},
+    ids: [],
   },
   effects: {
     * fetch(_, {call, put}) {
@@ -27,7 +28,7 @@ const UserModel = {
 
     * getImage({payload}, {call, put}) {
       const ret = yield call(getImage, payload);
-      return ret;
+      return ret.data;
     },
 
     * getPictureList({payload}, {call, put}) {
@@ -40,6 +41,39 @@ const UserModel = {
       return ret;
     },
 
+    * insertPicture({payload}, {call, put}) {
+      const ret = yield call(insertPicture, payload);
+      return ret;
+    },
+
+    * register({payload}, {call, put}) {
+      const rst = yield call(register, payload);
+      return rst;
+    },
+
+    * deleteUser({payload}, {call, put}) {
+      const rst = yield call(deleteUser, payload);
+      return rst;
+    },
+
+    * importPersons({payload}, {call, put}) {
+      const rst = yield call(importPersons, payload);
+      return rst;
+    },
+
+
+    * addDelIds({payload}, {call, put}) {
+      yield put({
+        type: 'changeIds',
+        payload: payload
+      })
+    }
+
+
+
+
+
+
 
   },
   reducers: {
@@ -49,6 +83,10 @@ const UserModel = {
 
     saveImage(state, action) {
       return {...state, currentUser: action.payload || {},};
+    },
+
+    changeIds(state, action) {
+      return {...state, ids: action.payload || []}
     },
 
     changeNotifyCount(

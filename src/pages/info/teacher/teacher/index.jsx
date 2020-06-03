@@ -1,18 +1,28 @@
-import React, {useState, useEffect,} from "react";
-import {Button, Divider, Popconfirm, Spin, Table} from "antd";
-import {connect} from "dva";
+import React, { useState, useEffect, } from "react";
+import {
+  Button, Divider, Popconfirm, Spin, Table,
+  Row,
+  Col,
+  Select,
+  Input,
+  Cascader,
+} from "antd";
+import { connect } from "dva";
 
 
-const Tables = ({dispatch}) => {
+const Tables = ({ dispatch }) => {
 
   const [data, setData] = useState([]);
 
+  const [searchView, setSelectView] = useState()
+
+  const { Search } = Input;
+
+  const [serachText, setSerachText] = useState('请输入搜索内容')
+
+
   const columns = [
-    // {
-    //   title: "Id",
-    //   dataIndex: "id",
-    //   key: "id"
-    // },
+
     {
       title: "编号",
       dataIndex: "code",
@@ -45,7 +55,7 @@ const Tables = ({dispatch}) => {
       render: (text, record) => {
         return (
           <div>
-            <Button >
+            <Button onClick={setVisible}>
               发消息
             </Button>
           </div>
@@ -54,19 +64,60 @@ const Tables = ({dispatch}) => {
     }
   ];
 
+  const setVisible = (val = true) => {
+    dispatch({
+      type: "global/changeNoticesModal",
+      payload: {
+        visible: val
+      }
+    });
+  };
+
   useEffect(() => {
-    const var1 = {
-      type: 1
-    }
-    getData(var1)
+    getSelectView()
+    getData()
   }, []);
 
 
+  const selectOnChang = e => {
+    getSelectView(e)
+  }
+
+  const onSumber = (e, sing) => {
+    const value = {
+      code: sing === 'code' ? e : null,
+      name: sing === 'name' ? e : null,
+    }
+
+    getData(value)
+  }
+
+  const getSelectView = (e = 'code') => {
+    const view = []
+
+    view.push(<Search
+      allowClear
+      placeholder={serachText}
+      onSearch={info => onSumber(info, e)}
+      style={{ width: '40%' }}
+    />)
+
+    switch (e) {
+      case 'code':
+      case 'name':
+      case 'year': setSelectView(view); break
+    }
+  }
+
   const getData = payload => {
+    const value = {
+      ...payload,
+      type: 1,
+    }
     if (dispatch) {
       dispatch({
         type: 'manage/getPersonList',
-        payload: payload
+        payload: value
       }).then((rst) => {
         setData(rst)
       })
@@ -76,7 +127,19 @@ const Tables = ({dispatch}) => {
 
   return (
     <div>
-      <Divider/>
+      <Row>
+
+
+        <Col span='16'>
+          <Select defaultValue="编号" onChange={selectOnChang}>
+            <Option value="code">编号</Option>
+            <Option value="name">姓名</Option>
+          </Select>
+          {searchView}
+        </Col>
+
+      </Row>
+      <Divider />
       <Table
         columns={columns}
         dataSource={data}

@@ -30,6 +30,7 @@ const GlobalHeaderRight = props => {
   const [newThree, setNewThree] = useState();
   const [newNotice, setNewNotice] = useState();
   const { visible } = noticesModal;
+
   const setVisible = val => {
     dispatch({
       type: "global/changeNoticesModal",

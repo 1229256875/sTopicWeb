@@ -31,29 +31,41 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   config => {
+
+    const Token = localStorage.getItem("Token");
     // 在发送请求之前做些什么（... 这里写你的展示loading的逻辑代码 ）
     // isShowLoading(true);
     // 获取token，配置请求头
     // const TOKEN = localStorage.getItem('Token')
     // 演示的token（注意配置请求头，需要后端做cros跨域处理，我这里自己前端配的跨域）
     // const token = '1fd399bdd9774831baf555ae5979c66b';
+    const {url} = config
+    if (url === '/api/deleteUser'){
+      config.headers['Content-Type'] = 'application/json;charset=utf-8';
+      config.data = JSON.stringify(config.data)
+      config.headers['token'] = Token;
+      return config;
+    }
 
-    if (config.url.includes('/api/getReportFile')){
+    if (url.includes('/api/getReportFile')){
       // config.headers["token"] = localStorage.getItem("Token");
       config.headers["Content-Type"] = "multipart/form-data";
       config.responseType = 'blob'
       return config;
     }
-    if (config.url.includes('/api/uploadReport')) {
+    
+    if (url.includes('/api/uploadReport')
+          || url.includes('/api/insertPicture')
+          || url.includes('/api/importPersons')) {
       config.headers["Content-Type"] = "application/x-www-form-urlencoded";
       return config;
     }
+    
     if (config.method === "post") {
       config.data = qs.stringify(config.data);
     }
 
-    const Token = localStorage.getItem("Token");
-    // const token = localStorage.getItem('token');
+    
     if (Token) {
       // 配置请求头 token
       config.headers["token"] = Token;

@@ -11,6 +11,21 @@ export function changePwd(params) {
   return http.post('/api/changePwd', params);
 }
 
+//注册
+export function register(params){
+  return http.post('/api/register', params);
+}
+
+//批量导入
+export function importPersons(params){
+  return http.post('/api/importPersons', params);
+}
+
+//删除用户
+export function deleteUser(params) {
+  return http.post('/api/deleteUser', params);
+}
+
 //获取分页头像
 export function getPictureList(params) {
   return http.post('/api/getPictureList', params);
@@ -19,6 +34,11 @@ export function getPictureList(params) {
 //修改头像
 export function setPicture(params) {
   return http.post('/api/setPicture', params);
+}
+
+//添加头像
+export function insertPicture(params) {
+  return http.post('/api/insertPicture', params);
 }
 
 // 验证账号
@@ -72,8 +92,8 @@ export function auditTopic(params) {
 }
 
 //获取历史题目
-export function getHistoryTopic() {
-  return http.get("/api/getHistoryTopicList");
+export function getHistoryTopic(params) {
+  return http.get("/api/getHistoryTopicList", params);
 }
 
 //删除题目
@@ -110,13 +130,18 @@ export function getJvmInfo() {
 
 //获取照片
 export function getImage(params) {
-  return http.get('/api/getImage/' + params)
+  return http.get('/api/getImage', params)
 }
 
 /** *=============================================== */
 // 获取院系信息
 export function getFacultyAll() {
   return http.post("/api/getFacultyAll");
+}
+
+
+export function getCascader() {
+  return http.post("/api/getCascader");
 }
 
 // 添加院系

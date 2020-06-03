@@ -5,6 +5,7 @@ import {
   PictureOutlined,
   PictureFilled,
   DownOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { Avatar, Menu, Spin, Badge, Alert, Modal, Form, Input, Button, message, Popconfirm, Row, Col, Upload } from "antd";
 import React, { useEffect, useState } from "react";
@@ -37,6 +38,13 @@ const AvatarDropdown = (props) => {
   const [avatar, setAvatar] = useState()
 
   const [page, setPage] = useState(1)
+
+  const [viewPicture, setViewPicture] = useState()
+
+  const [viewText, setViewText] = useState('Upload new avatar ')
+
+  const [personPicture, setPersonPicture] = useState()
+
 
   const showModal = () => {
     setState(true)
@@ -99,17 +107,19 @@ const AvatarDropdown = (props) => {
     }
   }
 
-  const setPicturea = id =>{
-    if (dispatch){
+  const setPicturea = id => {
+    if (dispatch) {
       dispatch({
         type: 'user/setPicture',
-        payload:{
+        payload: {
           id: id,
         }
-      }).then(rst =>{
-        if (rst && rst.status === 200){
+      }).then(rst => {
+        if (rst && rst.status === 200) {
+          getPicture()
           message.success("修改成功")
-        }else{
+          handleCancel()
+        } else {
           message.error("修改失败")
         }
       })
@@ -130,7 +140,7 @@ const AvatarDropdown = (props) => {
           cancelText="No"
         >
           <Avatar
-            size={64}
+            size={81}
             src={a}
             srcSet={a}
             icon={<UserOutlined />}
@@ -138,12 +148,83 @@ const AvatarDropdown = (props) => {
         </Popconfirm>
       )
     })
-    o.push(<Button onClick={() =>{
-      getPictureList(page+1, 10)
+    o.push(<Button onClick={() => {
+      getPictureList(page + 1, 10)
       setPage(page + 1)
     }}><DownOutlined />下一页</Button>)
     setAvatar(o)
   }, [avatarList])
+
+
+  const [fileList, setFileList] = useState([
+  ]);
+
+  // const onChange = ({ fileList: newFileList }) => {
+
+  //   setFileList(newFileList);
+  // };
+
+  //上传
+  const beforeUpload = (file) => {
+
+    const formData = new FormData();
+    formData.append('multipart', file)
+    formData.append('isUser', 1)
+    if (dispatch) {
+      dispatch({
+        type: 'user/insertPicture',
+        payload: formData,
+      }).then(rst => {
+        if (rst && rst.status === 200) {
+          let { data: { picture } } = rst;
+
+          let ima = <img width="100" height="100" src={'data:image/png;base64,' + picture}></img>
+          setViewPicture(ima)
+          setViewText(viewText + 'again')
+          getPicture()
+          message.success('头像修改成功');
+          handleCancel()
+        } else {
+          message.error('文件修改失败： ' + rst.msg)
+        }
+      })
+    }
+  }
+
+  useEffect(() => {
+    getPicture()
+  },[])
+
+  const getPicture = () => {
+    dispatch({
+      type: 'user/getImage',
+      payload: {
+        picId: currentUser.code,
+      }
+    }).then(rst => {
+      setPersonPicture(rst.picture)
+    })
+  }
+
+
+
+  const onPreview = async file => {
+    let src = file.url;
+    // if (!src) {
+    //   src = await new Promise(resolve => {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file.originFileObj);
+    //     reader.onload = () => resolve(reader.result);
+    //   });
+    // }
+
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow.document.write(image.outerHTML);
+  };
+
+
 
 
   const layout = {
@@ -156,11 +237,10 @@ const AvatarDropdown = (props) => {
 
   const changePwd = e => {
     if (e.newPwd === e.newPwd1) {
-      if (e.newPwd.length < 6 || e.newPwd > 16) {
+      if (e.newPwd.length < 6 || e.newPwd.length > 16) {
         message.error("密码长度为 6 ～ 16");
         return;
       }
-      console.log(e)
       dispatch({
         type: 'login/changePwd',
         payload: e
@@ -221,7 +301,7 @@ const AvatarDropdown = (props) => {
         <Avatar
           size="small"
           className={styles.avatar}
-          src={"http://127.0.0.1:9986/api/getImage/" + currentUser.code}
+          src={'data:image/png;base64,'+ personPicture}
           alt="avatar"
         />
         <span className={styles.name}>{currentUser.name}</span>
@@ -276,20 +356,22 @@ const AvatarDropdown = (props) => {
           footer={null}
           width='45%'
         >
-          <Row>{avatar}</Row>
-          <Row> 
+          <Row offset={[0, 50]}>{avatar}</Row>
 
-          <ImgCrop rotate>
-      <Upload
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        listType="picture-card"
-        fileList={fileList}
-        onChange={onChange}
-        onPreview={onPreview}
-      >
-        {fileList.length < 5 && '+ Upload'}
-      </Upload>
-    </ImgCrop>
+          <Row offset={[0, 50]}>
+            <ImgCrop rotate>
+              <Upload
+
+                listType="picture-card"
+                fileList={fileList}
+                // onChange={onChange}
+                beforeUpload={beforeUpload}
+                onPreview={onPreview}
+              >
+
+                {viewPicture}{viewText}
+              </Upload>
+            </ImgCrop>
           </Row>
         </Modal>
       </span>

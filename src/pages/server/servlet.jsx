@@ -1,12 +1,18 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 
-import {Layout, Row, Col, Tag, message, Button, Table, Tooltip} from "antd";
+import { Layout, Row, Col, Tag, message, Button, Table, Tooltip } from "antd";
 
 import moment from "moment";
-import {connect} from "dva";
+import { connect } from "dva";
 import styles from './index.less'
 import axios from "axios";
-import {push} from "umi/src/router";
+import { push } from "umi/src/router";
+import { url } from '@/utils/const';
+
+
+const getUri = () => {
+  return url.http
+}
 
 const keyList = [
   {
@@ -116,15 +122,14 @@ const keyList = [
   }
 ]
 
-const ServerTable = ({dispatch}) => {
+const ServerTable = ({ dispatch }) => {
   const [dataInfo, setDataInfo] = useState([]);
   const [count, setCount] = useState(0);
   const timeout = useRef(null);
   const [tableData, setData] = useState([]);
-
-  const [url, setUrl] = useState('http://127.0.0.1:9986');
   const [buttonLoading, setButtonLoading] = useState(false)
-
+  const [url, setUrl] = useState(getUri)
+  
   const getData = () => {
     axios.all([
       axios.get(url + '/actuator/metrics/jvm.memory.max'),
@@ -173,7 +178,7 @@ const ServerTable = ({dispatch}) => {
       };
       value.time = moment().format('YYYY年MM月DD日 HH时mm分ss秒')
 
-      const valueList = keyList.map(({params, desc, key}) => ({params, desc, val: value[key]}))
+      const valueList = keyList.map(({ params, desc, key }) => ({ params, desc, val: value[key] }))
       setData(valueList);
       setDataInfo(value)
     }).catch((error) => {
@@ -215,11 +220,11 @@ const ServerTable = ({dispatch}) => {
       <div>
         上次数据获取时间：{dataInfo.time}
         <Button loading={buttonLoading}
-                type="primary"
-                onClick={() => {
-                  setButtonLoading(true)
-                  setCount(count + 1)
-                }}>
+          type="primary"
+          onClick={() => {
+            setButtonLoading(true)
+            setCount(count + 1)
+          }}>
           刷新
         </Button>
       </div>
@@ -227,7 +232,7 @@ const ServerTable = ({dispatch}) => {
         columns={columns}
         dataSource={tableData}
         pagination={false}
-        // rowKey={count}
+      // rowKey={count}
       />
 
     </div>

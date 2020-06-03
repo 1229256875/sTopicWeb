@@ -2,6 +2,7 @@ import { Avatar, List } from "antd";
 import React from "react";
 import classNames from "classnames";
 import styles from "./NoticeList.less";
+import { connect } from "dva";
 
 const NoticeList = ({
   data = [],
@@ -13,8 +14,13 @@ const NoticeList = ({
   showClear = true,
   clearText,
   viewMoreText,
-  showViewMore = false
+  showViewMore = false,
+  dispachet
 }) => {
+
+
+
+
   if (!data || data.length === 0) {
     return (
       <div className={styles.notFound}>
@@ -103,4 +109,4 @@ const NoticeList = ({
   );
 };
 
-export default NoticeList;
+export default connect()(NoticeList);

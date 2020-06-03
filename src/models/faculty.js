@@ -1,4 +1,4 @@
-import { getFacultyList, getFacultyAll, deleteFaculty, insertFaculty, updateFaculty  } from "@/api/api";
+import { getFacultyList, getFacultyAll, deleteFaculty, insertFaculty, updateFaculty, getCascader  } from "@/api/api";
 
 const Model = {
   namespace: "faculty",
@@ -27,13 +27,16 @@ const Model = {
     },
 
     *updateFaculty(action, {call, put}) {
-      console.log('asd', action.payload)
       const rst = yield call(updateFaculty, action.payload);
       return rst;
     },
 
+    *getCascader(action, {call, put}) {
+      const rst = yield call(getCascader);
+      return rst.data;
+    },
+
     * deleteFaculty(action, {call, put}) {
-      console.log('asd', action.payload)
        const rst = yield call(deleteFaculty, action.payload);
       return rst;
     }
